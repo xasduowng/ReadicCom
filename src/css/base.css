@@ -1,0 +1,113 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    scroll-behavior:smooth;
+}
+:root{
+    --web: #211f69;
+}
+::-webkit-scrollbar {
+    width: 4px;
+}
+::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, 0.4);
+}
+::-webkit-scrollbar-thumb {
+    background-color: var(--web);
+}
+/*  */
+a{
+    text-decoration: none;
+    color: black;
+    display: block;
+}
+input{
+    padding: 8px 12px;
+    outline: none;
+    border: 1px solid #ccc;
+    width: 100%;
+}
+img{
+    width: 100%;
+}
+/*  */
+.col{
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.btn{
+    cursor: pointer;
+}
+.name{
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.dgr{
+    display: grid;
+    gap: 6px 12px;
+}
+.dfl{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+}
+.trf{
+    text-transform: capitalize;
+}
+#overlay{
+    position: fixed;
+    top: 0; right: 0; bottom: 0; left: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 5;
+}
+.close{
+    display: none;
+}
+.choose{
+    border: 1px solid var(--web);
+}
+#back-top{
+}
+#web-fixed p, #web-fixed a,
+#web-fixed i{
+    position: fixed;
+    text-shadow: 1px 2px 3px var(--web);
+    z-index: 4;
+}
+.nav-icon{
+    transition: 0.6s;
+}
+.nav-icon.i1{
+    bottom: 20px; right: 20px;
+    font-size: 38px;
+    color: #2658c9;
+}
+.nav-icon.i4{
+    bottom: 20px; right: 22px;
+    font-size: 40px;
+    color: #2658c9;
+}
+.nav-icon.i2{
+    bottom: 8%;
+    right: 126px;
+    font-size: 36px;
+    color: white;
+}
+.nav-icon.i3{
+    bottom: 20%;
+    right: 50px;
+    font-size: 36px;
+    color: tomato;
+}
+.nav-icon.i5{
+    bottom: 10%;
+    right: 66px;
+    font-size: 28px;
+    color: green;
+}

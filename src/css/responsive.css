@@ -1,0 +1,133 @@
+@media screen and (min-width: 480px ) and (max-width: 1023){
+    .box-comic{
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+}
+@media screen and (max-width: 479px) {
+    /*  */
+    .list-nav{
+        border: 1px solid rgb(48, 47, 47);
+        border-radius: 18px;
+        margin: 2px 2px;
+        display: none;
+    }
+    .list-nav.open{
+        display: block;
+    }
+    .list-nav_btn > div,
+    .list-nav_btn a{
+        border: none;
+    }
+    .list-nav .col,
+    .box-inf .col.dgr{
+        display: block;
+        border-radius: 18px;
+    }
+    /*  */
+    .box-comic{
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .box-extra{
+        max-width: 96%;
+        top: 20px;
+        grid-template-columns: 1fr;
+    }
+    form.box-extra_col {
+        width: 100%;
+    }
+    .be_col-handle{
+        top: 98%; right: 8px;
+    }
+    .be_col-handle span {border: 1px solid #575656;}
+    div.box-extra_col{ display: none;}
+    .box-inf_col.rule{
+        margin-top: 26px;
+    }
+    .box-extra_btn{
+        width: 100%;
+    }
+    .box-extra_status{
+        grid-template-columns: 1fr 1fr 2fr;
+    }
+    .ci_infor-main{
+        font-size: 14px;
+    }
+    /* Box-genre */
+    .box-genre .col{
+        display: block;
+        grid-template-columns: none;
+    }
+    .box-genre_list{
+        display: none; 
+        background: #2b2a2a; 
+        position: fixed;
+        top: 0%; right: 0; left: 0;
+        z-index: 6; 
+        width: 100%;
+        margin: 20px auto;
+    }
+    .box-genre_list.open{
+        display: block;
+    }
+    .bg_list-genre{
+        height: 292px;
+        display: block;
+    }
+    .bg_list-comic{
+        display: flex;
+        text-indent: 12px;
+        text-align: center;
+        align-items: center;
+        border-top: 1px solid #ccc;
+        color: rgb(233, 227, 227);
+        margin-top: 10px;
+    }
+    .bg_list-comic section{
+        font-weight: 600;
+        text-transform: capitalize;
+    }
+    /* ------------------------------------------------------- */
+    .comic_genre-box{
+        grid-template-columns: 1fr 1fr;
+    }
+    /* ------------------------------------------------------- */
+    #box-web .col{
+        display: block;
+        width: 96%;
+        padding: 12px 6px;
+    }
+    .bg_list-search{
+        position: unset;
+        width: 100%;
+        background: rgb(0 0 0 / 0.4);
+    }
+    .bgl-comic_close{
+        display: block;
+        right: 12px;
+        bottom: -48px;
+        background: rgb(52 54 56);
+        padding: 6px 12px;
+        width: 160px;
+        border-radius: 5px;
+        font-size: 18px;
+    }
+    .box-genre_list span{
+        font-size: 15px;
+    }
+    /* ---------------------------------- */
+    .nav-icon.i3 {
+        bottom: 108px;
+        right: 48px;
+        font-size: 28px;
+    }
+    .nav-icon .i5{
+        bottom: 50px;
+        right: 50px;
+        font-size: 18px;
+    }
+    .nav-icon.i2 {
+        bottom: 7%;
+        right: 114px;
+        font-size: 28px;
+    }
+}
