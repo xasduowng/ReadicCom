@@ -60,7 +60,7 @@
 }
 .box-genre .col{
     padding: 24px;
-    grid-template-columns: 2fr 3fr;
+    grid-template-columns: 2fr 5fr;
     position: relative;
 }
 .box-genre_random,
@@ -165,14 +165,14 @@
     color: rgb(245, 239, 239);
 }
 .bg_random-link a:first-child{
-    background:rgb(31, 46, 87)
+    background:rgb(39, 56, 104)
 }
 .bg_random-link a:last-child{
     background:rgb(43, 42, 42)
 }
 /* --------------BOX-COMIC-GENRE-------------------- */
 .box-comic_genre{
-    background: #251557;
+    background: #372e53;
     color: white;
     margin-top: 10px;
     padding: 20px;
