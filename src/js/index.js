@@ -9,9 +9,10 @@ const zz = document.querySelectorAll.bind(document);
     const dataWeb = {
         "arrayComic":[],
         "arrayWebsite": [],
+        "arrayGenre": [],
         "statusWeb": {
             chapterHref: "none",
-            idComic: ""
+            idComic: 0,
         }
     }
     // Ham dung de day mang ban dau len LocalStorage
@@ -58,10 +59,10 @@ function handleNavWeb() {
             overLay.classList.remove('close');
         }
         overLay.onclick = () => {
+            overLay.classList.add('close');
             boxGenre.classList.remove('open');
             boxExtra.classList.add('close')
             z('.list-nav').classList.remove('open');
-            overLay.classList.add('close');
         }
         z('.bgl-comic_close').onclick = () => {
             boxGenre.classList.remove('open');
@@ -74,7 +75,8 @@ function handleNavWeb() {
 /* -------------------------------------------------------------------*/
 const dataWeb = getApi ("dataWeb");
 const arrComic = dataWeb.arrayComic;
-    arrComic.length >= 1 ? handleBoxComic(arrComic): console.log("Chưa có dữ liệu!");
+const idComic = (dataWeb.statusWeb).idComic;
+    arrComic.length >= 1 ? handleBoxComic(arrComic, idComic): console.log("Chưa có dữ liệu!");
 const arrWebsite = dataWeb.arrayWebsite;
     handleBoxWebsite(arrWebsite);
 /* -------------------------------------------------------------------*/
@@ -90,20 +92,23 @@ function handleBoxGenre() {
                 }
             }
                 // Xoa cac phan tu trung lap trong mang
-            let arrayGenre = Array.from(new Set(arrGenre));
+            let arrayGenre = (Array.from(new Set(arrGenre))).sort();
+            dataWeb.arrayGenre = arrayGenre;
+            postApi("dataWeb", dataWeb);
             return arrayGenre; ;
         } ;
         // Xu ly danh sach the loai truyen-----------------------------------
         const arrayGenre = getArrGenre();
         const boxGenre = z('.bg_list-genre');
         for (let i = 0; i < arrayGenre.length; i++) {
-            let span  = document.createElement('span');
-            span.className = 'btn';
-            span.innerText = arrayGenre[i];
-            boxGenre.appendChild(span); 
+            let a  = document.createElement('a');
+            a.className = 'btn';
+            a.href = "#" + arrayGenre[i];
+            a.innerText = arrayGenre[i];
+            boxGenre.appendChild(a); 
         }
         // Ham nay dung de tim kiem the loai--------------------------------
-        const listGenre = zz('.bg_list-genre span');
+        const listGenre = zz('.bg_list-genre a');
         const genreTitle = z('.comic_genre-title span');
         function handleComicSearch() {
             const inputSearch = z('.bg_list-search');
@@ -125,9 +130,9 @@ function handleBoxGenre() {
                         <span class="btn">${nameGenre}</span>
                         `)
                 }).join("");
-                handleGenre(zz('.bg_list-genre span'))
-                zz('.bg_list-genre span')[0].classList.add('choose');
-                handleGenre(zz('.bg_list-genre span'))
+                handleGenre(zz('.bg_list-genre a'))
+                zz('.bg_list-genre a')[0].classList.add('choose');
+                handleGenre(zz('.bg_list-genre a'))
             }
         } handleComicSearch();
         // Xu ly viec tai ra danh sach truyen theo ngau nhien---------------
@@ -157,7 +162,7 @@ function handleBoxGenre() {
         function handleGenre(listGenre) {
             listGenre.forEach((genre, index) => {
                 genre.onclick = () => {
-                    z('.bg_list-genre span.choose').classList.remove('choose');
+                    z('.bg_list-genre a.choose').classList.remove('choose');
                     listGenre[index].classList.add('choose');
                     let currentGenre = genre.innerText.toLowerCase();
                     genreTitle.innerText = listGenre[index].innerText;
@@ -200,151 +205,239 @@ function handleBoxGenre() {
     }
 }  handleBoxGenre();
 /* -------------------------------------------------------------------*/
-function handleBoxComic(arrComic) {
+function handleBoxComic(arrComic, idComic) {
     const boxComic = z('.box-comic');
     var today = new Date().toLocaleString("en-US", {timeZone: "Asia/Jakarta"});
-    arrComic.sort((a, b)=>{
-        return b.nameChap - a.nameChap;
+    const comicNavs = zz('.box-comic_nav span');
+    comicNavs[idComic].classList.add('choose');
+    comicNavs.forEach((comic, index) => {
+        comic.onclick = () => {
+            dataWeb.statusWeb.idComic = index;
+            postApi("dataWeb", dataWeb);
+            // ----------------------------------
+            z('.box-comic_nav span.choose').classList.remove('choose');
+            comicNavs[index].classList.add('choose');
+            handleArrComic(index);
+                $('.box-comic_nav span.sld').click(function() {
+                    $('.box-comic_genre').slideDown();
+                })
+        }
+    }); 
+    if (idComic == 2) {$('.box-comic_genre').slideUp();}
+    $('.comic_nav-genre').click(function() {
+        $('.box-comic_genre').slideUp(600);
     })
-    boxComic.innerHTML = arrComic.map(renderComic).join("");
-    function renderComic(item) {
-        let {nameComic, nameHref, imgHref, nameChap,statusComic,nameCharacter, chapterHref} = item;
-        return (`
-        <div class="comic-item">
-            <div class="comic-i_edit btn">Edit</div>
-            <div class="comic-i_infor">
-                <a href= ${nameHref} target="_blank">
-                    <img class="ci_infor-img" src= ${imgHref} alt="" >
-                    <div class="ci_infor-main">Main: <span>${nameCharacter}</span></div>
-                </a>
-                <p class="ci_infor-status">${statusComic}</p>
-            </div>
-            <div class="comic-i_name">
-                <a href=${nameHref} target="_blank" class="ci_name-comic name">${nameComic}</a>
-                <a href=${chapterHref} target="_blank" class="ci_name-chap">
-                    <div class="cin-chap_name">Đọc tiếp <span>Chương ${nameChap}</span></div>
-                    <div class="cin-chap_update"></div>
-                </a>
-            </div>
-            <div class="comic-i_web"></div>
-        </div>
-        `)
-    }
-    function renderValueComic() {
-        function renderNameLink() {
-            const comicItems = zz('.comic-item');
-            comicItems.forEach((item, index) => {
-                item.id = arrComic[index].nameComic;
+    function handleArrComic(index) {
+        if (index == 0) {
+            // Sắp xếp theo số chương
+            arrComic.sort((a, b)=>{
+                return b.nameChap - a.nameChap;
+            });
+            Object.assign((boxComic).style, {
+                display: "grid"
             })
-        } renderNameLink();
-        function renderDate() {
-            // ['8/6/2024', '3:33:59 PM']
-            const chapUp = zz('.cin-chap_update');
-            const arrToDate = today.split(', ');
-            const getToDay = arrToDate[0].split('/');
-            const getToHour = arrToDate[1].split(' ')[0].split(":");
-            const getToOn = arrToDate[1].split(' ')[1];
-            for (let i = 0; i < arrComic.length; i++) {
-                const arrPassDate = arrComic[i].updateChap.split(', ');
-                const getPassDay = arrPassDate[0].split('/');
-                const updateDay = getPassDay[1] + "-" + getPassDay[0] + "-" + getPassDay[2];
-                const getPassHour = arrPassDate[1].split(' ')[0].split(":");
-                const getPassOn = arrPassDate[1].split(' ')[1];
-                handleDatetoPage(arrPassDate, updateDay, getPassDay, getPassHour, getPassOn, i);
+            handleRenderComic(arrComic);
+            handleBoxExtra();
+        } else if (index == 1) {
+            // Sắp xếp theo alpha
+            arrComic.sort((a,b) => {
+                var x = a.nameComic.toLowerCase();
+                var y = b.nameComic.toLowerCase();
+                if(x < y) {
+                    return -1;
+                }
+                if(x > y) {
+                    return 1;
+                } else {
+                    // Tên giống nhau
+                    return 0;
+                }
+            });
+            Object.assign((boxComic).style, {
+                display: "grid"
+            })
+            handleRenderComic(arrComic); handleBoxExtra()
+        } else if (index == 2) {
+           // Sap xep truyện theo the loai
+            boxComic.innerHTML = "";
+            Object.assign((boxComic).style, {
+                display: "block"
+            });
+            const arrGenre = dataWeb.arrayGenre.sort();
+            const lengthGenre = arrGenre.length;
+            for (let i = 0; i < lengthGenre; i++) {
+                const div = document.createElement('div');
+                const h2 = document.createElement('h2');
+                    Object.assign(h2.style, {
+                        color: "#253e7b",
+                        fontWeight: 600,
+                        textTransform: "capitalize"
+                    })
+                h2.id = arrGenre[i];
+                h2.innerText = (i + 1) + ". " + arrGenre[i];
+                const newArrComic = (arrComic.filter((a) => {
+                    return a.listGenre.toLowerCase().includes(arrGenre[i]);
+                })).sort((a,b) => {
+                    return b.nameChap - a.nameChap;
+                })
+                div.className = "genre-wrap";
+                div.innerHTML = newArrComic.map(renderComic).join("");
+                boxComic.appendChild(h2);
+                boxComic.appendChild(div);
+                // insertValueComic(newArrComic);
             }
-            function handleDatetoPage(arrPassDate, updateDay, getPassDay, getPassHour, getPassOn, i) {
-                // Tinh toan tim gia tri
-                let getYear =  +getToDay[2] - getPassDay[2];
-                let getMonth =  +getToDay[0] - getPassDay[0];
-                let getDay =  +getToDay[1] - getPassDay[1];
-                let getHour = +getToHour[0] - getPassHour[0];
-                let getMinute = +getToHour[1] - (+getPassHour[1]);
-                let getSecond = +getToHour[2] - (+getPassHour[2]);
-                if (getYear == 0) {
-                    if (getMonth == 0) {
-                        if (getDay < 0) {
-                            handleDay(getToDay[2], getToDay[0]);
-                        } else if (getDay >= 8) {
-                            chapUp[i].innerText = updateDay;
-                        } else if (getDay == 0) {
-                            if (getPassOn == getToOn) {
-                                if (getHour == 0) {
-                                    if (getMinute == 0) {
-                                        if (getSecond >= 0) {
-                                            chapUp[i].innerText = getSecond + " giây trước";
+            handleBoxExtra();
+        } else {
+             // Sắp xếp theo lần đọc gần nhất
+            Object.assign((boxComic).style, {
+                display: "grid"
+            })
+            handleRenderComic(arrComic);
+            handleBoxExtra();
+        }; 
+        function handleRenderComic(arrComic) {
+            boxComic.innerHTML = arrComic.map(renderComic).join("");
+            insertValueComic(arrComic);
+        };
+            function renderComic(item) {
+                let {nameComic, nameHref, imgHref, nameChap,statusComic,nameCharacter, chapterHref} = item;
+                return (`
+                <div class="comic-item">
+                    <div class="comic-i_edit btn">Edit</div>
+                    <div class="comic-i_infor">
+                        <a href= ${nameHref} target="_blank">
+                            <img class="ci_infor-img" src= ${imgHref} alt="" >
+                            <div class="ci_infor-main">Main: <span>${nameCharacter}</span></div>
+                        </a>
+                        <p class="ci_infor-status">${statusComic}</p>
+                    </div>
+                    <div class="comic-i_name">
+                        <a href=${nameHref} target="_blank" class="ci_name-comic name">${nameComic}</a>
+                        <a href=${chapterHref} target="_blank" class="ci_name-chap">
+                            <div class="cin-chap_name">Đọc tiếp <span>Chương ${nameChap}</span></div>
+                            <div class="cin-chap_update"></div>
+                        </a>
+                    </div>
+                    <div class="comic-i_web"></div>
+                </div>
+                `)
+            };
+            function insertValueComic(arrComic) {
+                function renderNameLink() {
+                    const comicItems = zz('.comic-item');
+                    comicItems.forEach((item, index) => {
+                        item.id = arrComic[index].nameComic;
+                    })
+                } renderNameLink();
+                function renderDate() {
+                    // ['8/6/2024', '3:33:59 PM']
+                    const chapUp = zz('.cin-chap_update');
+                    const arrToDate = today.split(', ');
+                    const getToDay = arrToDate[0].split('/');
+                    const getToHour = arrToDate[1].split(' ')[0].split(":");
+                    const getToOn = arrToDate[1].split(' ')[1];
+                    for (let i = 0; i < arrComic.length; i++) {
+                        const arrPassDate = arrComic[i].updateChap.split(', ');
+                        const getPassDay = arrPassDate[0].split('/');
+                        const updateDay = getPassDay[1] + "-" + getPassDay[0] + "-" + getPassDay[2];
+                        const getPassHour = arrPassDate[1].split(' ')[0].split(":");
+                        const getPassOn = arrPassDate[1].split(' ')[1];
+                        handleDatetoPage(arrPassDate, updateDay, getPassDay, getPassHour, getPassOn, i);
+                    }
+                    function handleDatetoPage(arrPassDate, updateDay, getPassDay, getPassHour, getPassOn, i) {
+                        // Tinh toan tim gia tri
+                        let getYear =  +getToDay[2] - getPassDay[2];
+                        let getMonth =  +getToDay[0] - getPassDay[0];
+                        let getDay =  +getToDay[1] - getPassDay[1];
+                        let getHour = +getToHour[0] - getPassHour[0];
+                        let getMinute = +getToHour[1] - (+getPassHour[1]);
+                        let getSecond = +getToHour[2] - (+getPassHour[2]);
+                        if (getYear == 0) {
+                            if (getMonth == 0) {
+                                if (getDay < 0) {
+                                    handleDay(getToDay[2], getToDay[0]);
+                                } else if (getDay >= 8) {
+                                    chapUp[i].innerText = updateDay;
+                                } else if (getDay == 0) {
+                                    if (getPassOn == getToOn) {
+                                        if (getHour == 0) {
+                                            if (getMinute == 0) {
+                                                if (getSecond >= 0) {
+                                                    chapUp[i].innerText = getSecond + " giây trước";
+                                                } else {
+                                                    chapUp[i].innerText = 60 + getSecond + " giây trước";
+                                                }
+                                            } else if (getMinute > 0) {
+                                                chapUp[i].innerText = getMinute + " phút trước";
+                                            } else {
+                                                chapUp[i].innerText = 60 + getMinute + " phút trước";
+                                            }
                                         } else {
-                                            chapUp[i].innerText = 60 + getSecond + " giây trước";
+                                            chapUp[i].innerText = getHour + " giờ trước";
                                         }
-                                    } else if (getMinute > 0) {
-                                        chapUp[i].innerText = getMinute + " phút trước";
                                     } else {
-                                        chapUp[i].innerText = 60 + getMinute + " phút trước";
+                                        let hour = 12 + getHour;
+                                        chapUp[i].innerText = hour + " giờ trước";
                                     }
                                 } else {
-                                    chapUp[i].innerText = getHour + " giờ trước";
+                                    chapUp[i].innerText = getDay + " ngày trước";
                                 }
                             } else {
-                                let hour = 12 + getHour;
-                                chapUp[i].innerText = hour + " giờ trước";
+                                chapUp[i].innerText = updateDay;
                             }
                         } else {
-                            chapUp[i].innerText = getDay + " ngày trước";
-                        }
-                    } else {
-                        chapUp[i].innerText = updateDay;
-                    }
-                } else {
-                    chapUp[i].innerText = updateDay;
-                }
-                function handleDay(year, month) {
-                    let day;
-                    switch (month) {
-                        case 4: ;case 6: ;case 9: ;case 11: ;
-                            day = 30; renderDay(day)
-                            break;
-                        case 2 :
-                            // nếu năm nhập vào là năm nhuận thì tháng 2 sẽ có 29 ngày
-                            if (year% 4 == 0 ) {
-                                day =  29; renderDay(day);
-                                break;
-                            }
-                            //ngược lại nếu không phải năm nhuận thì tháng 2 sẽ có 28 ngày
-                            else {
-                                day =  28; renderDay(day);
-                                break;
-                            }
-                        default: {
-                            day = 31; renderDay(day);
-                        }   
-                    };
-                    function renderDay(day) {
-                        let numDay = day + getToDay[1] - getPassDay[1];
-                        if (numDay >= 8)   {
                             chapUp[i].innerText = updateDay;
                         }
+                        function handleDay(year, month) {
+                            let day;
+                            switch (month) {
+                                case 4: ;case 6: ;case 9: ;case 11: ;
+                                    day = 30; renderDay(day)
+                                    break;
+                                case 2 :
+                                    // nếu năm nhập vào là năm nhuận thì tháng 2 sẽ có 29 ngày
+                                    if (year% 4 == 0 ) {
+                                        day =  29; renderDay(day);
+                                        break;
+                                    }
+                                    //ngược lại nếu không phải năm nhuận thì tháng 2 sẽ có 28 ngày
+                                    else {
+                                        day =  28; renderDay(day);
+                                        break;
+                                    }
+                                default: {
+                                    day = 31; renderDay(day);
+                                }   
+                            };
+                            function renderDay(day) {
+                                let numDay = day + getToDay[1] - getPassDay[1];
+                                if (numDay >= 8)   {
+                                    chapUp[i].innerText = updateDay;
+                                }
+                            }
+                        };
+                    };
+                } renderDate();
+                function renderAnotherWeb() {
+                    const comicWeb = zz('.comic-i_web');
+                    for (let i = 0; i <arrComic.length; i++) {
+                        let nameWeb = arrComic[i].listWeb[0].nameWeb;
+                        if (nameWeb.length != 0) {
+                            let p = document.createElement('p');
+                            p.innerText = "Phiên bản khác";
+                            let a = document.createElement('a');
+                            a.target = "_blank";
+                            a.innerText = arrComic[i].listWeb[0].nameWeb;
+                            a.href = arrComic[i].listWeb[0].linkWeb;
+                            comicWeb[i].appendChild(p);
+                            comicWeb[i].appendChild(a);
+                        }
                     }
-                };
+                } renderAnotherWeb();
             };
-        } renderDate();
-        function renderAnotherWeb() {
-            const comicWeb = zz('.comic-i_web');
-            for (let i = 0; i <arrComic.length; i++) {
-                let nameWeb = arrComic[i].listWeb[0].nameWeb;
-                if (nameWeb.length != 0) {
-                    let p = document.createElement('p');
-                    p.innerText = "Phiên bản khác";
-                    let a = document.createElement('a');
-                    a.target = "_blank";
-                    a.innerText = arrComic[i].listWeb[0].nameWeb;
-                    a.href = arrComic[i].listWeb[0].linkWeb;
-                    comicWeb[i].appendChild(p);
-                    comicWeb[i].appendChild(a);
-                }
-            }
-        } 
-        renderAnotherWeb();
-    } renderValueComic();
-};
+        
+    } handleArrComic(idComic)
+} ;
 /* -------------------------------------------------------------------*/
 function handleBoxWebsite(arrWebsite) {
     const inputs = zz('.box-web_input input');
@@ -446,7 +539,6 @@ function handleBoxExtra() {
     const inputs = zz('form input');
     const nameC = z('.be_col-name');
     const imgC = z('.be_col-img');
-    var today = new Date().toLocaleString("en-US", {timeZone: "Asia/Jakarta"});
     // -----------------------
     function displayElement() {
         extraBtns.forEach((btn) => {
@@ -469,6 +561,7 @@ function handleBoxExtra() {
         function closeBox() {
             boxExtra.classList.add('close');
             overLay.classList.add('close');
+            boxGenre.classList.remove('open');
             navIcon[0].classList.remove('close');
             for (let i = 1; i < (navIcon.length); i++) {
                 navIcon[i].classList.add('close');
@@ -588,7 +681,7 @@ function handleBoxExtra() {
                 }
             ],
             statusComic: statusComic.value,
-            updateChap: today,
+            updateChap: new Date().toLocaleString("en-US", {timeZone: "Asia/Jakarta"}),
         }
         return x;
     };   

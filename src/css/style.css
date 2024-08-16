@@ -109,7 +109,7 @@
     max-height: 80%;
     margin-top: 16px;
 }
-.box-genre_list span{
+.box-genre_list a{
     color: #ccc;
     display: block;
     text-transform: capitalize;
@@ -120,10 +120,10 @@
     transition: 0.4s;
     border: 1px solid transparent;
 }
-.box-genre_list span.choose{
+.box-genre_list a.choose{
     background: var(--web);
 }
-.box-genre_list span:hover{
+.box-genre_list a:hover{
     background: var(--web);
     opacity: 0.9;
 }
@@ -142,6 +142,7 @@
 }
 .bg_random-img{
     width: 240px;
+    max-width: 100%;
     height: 280px;
     display: flex;
     margin: 0 auto;
@@ -223,14 +224,43 @@
     border-radius: 5px;
     font-size: 14px;
 }
+/* ---------------------------------------BOX-COMIC_NAV------------------------ */
+.box-comic_nav{
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px 4px;
+    margin: 20px auto 10px auto;
+}
+.box-comic_nav span{
+    background:rgb(59, 46, 134);
+    color: white;
+    border-radius: 18px;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+}
+.box-comic_nav span.choose{
+    background: #172961;
+}
 /* ------------------------------------------BOX-COMIC------------------------- */
 .box-comic{
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 12px 8px;
-    margin: 20px auto;
+    margin: 0 auto;
     padding: 6px;
 }
+.box-comic .genre-wrap{
+    display: grid;
+    grid-template-columns: repeat(5,1fr);
+    gap: 12px 8px;
+    margin: 20px auto;
+    padding: 16px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    background: rgb(252 252 252)
+}
+/* -------- */
 .comic-item{
     position: relative;
 }
@@ -583,7 +613,7 @@ form input{
 .box-web_input input{
     font-size: 17px;
 }
-.box-web_input input[id="name-web"] {
+.box-web_input input[id=name-web] {
     text-transform: capitalize;
 }
 .btn-web{

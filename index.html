@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://kit.fontawesome.com/13dc34c750.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link rel="icon" type="image/jpg" href="src/img/29_10_2021(1).jpg">
     <link rel="stylesheet" href="src/css/base.css">
     <link rel="stylesheet" href="src/css/style.css">
@@ -64,6 +65,13 @@
             </div>
             <div class="comic_genre-box dgr col"></div>
         </div>
+        <div class="box-comic_nav col">
+            <span class="sld">Số chương</span>
+            <span class="sld">Theo alpha</span>
+            <span class="comic_nav-genre">Theo Thể loại</span>
+            <span class="sld">Gần đây</span>
+            <span class="sld">Theo website</span>
+        </div>
         <div class="box-comic col"><!--JS--></div>
         <div class="box-extra close dgr">
             <form action="" class="box-extra_col">
@@ -83,7 +91,8 @@
                     <input type="number" min="0" placeholder="Số chương">
                     <select name="genre" id="status-comic" class="be_status-select">
                         <option value="On going" >On going</option>
-                        <option value="Dropped &#9785;" >Drop</option>
+                        <option value="Merge chaps &#9752">Gộp chap</option>
+                        <option value="Dropped &#9785" >Drop</option>
                         <option value="Ra chậm quá &#9761">Slow</option>
                     </select>
                     <p class="be_status-link btn">Thêm đường dẫn</p>

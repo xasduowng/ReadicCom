@@ -130,4 +130,11 @@
         right: 114px;
         font-size: 28px;
     }
+    /* --------------BOX-COMIC_NAV---------------- */
+    .box-comic_nav{
+        flex-wrap: wrap;
+    }
+    .box-comic .genre-wrap{
+        grid-template-columns: 1fr 1fr;
+    }
 }
