@@ -62,7 +62,6 @@ function handleNavWeb() {
             overLay.classList.add('close');
             boxGenre.classList.remove('open');
             boxExtra.classList.add('close')
-            z('.list-nav').classList.remove('open');
         }
         z('.bgl-comic_close').onclick = () => {
             boxGenre.classList.remove('open');
@@ -70,14 +69,22 @@ function handleNavWeb() {
             z('.list-nav').classList.remove('open');
             overLay.classList.add('close');
         }
+        zz('.list-nav_btn a').forEach((btn) => {
+            btn.onclick = () => {
+                z('.list-nav').classList.remove('open');
+            }
+        })
     }
 } handleNavWeb();
 /* -------------------------------------------------------------------*/
 const dataWeb = getApi ("dataWeb");
 const arrComic = dataWeb.arrayComic;
 const idComic = (dataWeb.statusWeb).idComic;
-    arrComic.length >= 1 ? handleBoxComic(arrComic, idComic): console.log("Chưa có dữ liệu!");
+    arrComic.length >= 1 ? handleBoxComic(arrComic, idComic)
+        : console.log("Chưa có dữ liệu!");
 const arrWebsite = dataWeb.arrayWebsite;
+    arrWebsite.length >=1 ? (z('.sld.close').classList.remove('close'))
+        : console.log("Chưa có dữ liệu!")
     handleBoxWebsite(arrWebsite);
 /* -------------------------------------------------------------------*/
 function handleBoxGenre() {
@@ -236,8 +243,7 @@ function handleBoxComic(arrComic, idComic) {
             Object.assign((boxComic).style, {
                 display: "grid"
             })
-            handleRenderComic(arrComic);
-            handleBoxExtra();
+            handleRenderComic(arrComic); handleBoxExtra();
         } else if (index == 1) {
             // Sắp xếp theo alpha
             arrComic.sort((a,b) => {
@@ -268,11 +274,6 @@ function handleBoxComic(arrComic, idComic) {
             for (let i = 0; i < lengthGenre; i++) {
                 const div = document.createElement('div');
                 const h2 = document.createElement('h2');
-                    Object.assign(h2.style, {
-                        color: "#253e7b",
-                        fontWeight: 600,
-                        textTransform: "capitalize"
-                    })
                 h2.id = arrGenre[i];
                 h2.innerText = (i + 1) + ". " + arrGenre[i];
                 const newArrComic = (arrComic.filter((a) => {
@@ -287,14 +288,47 @@ function handleBoxComic(arrComic, idComic) {
                 // insertValueComic(newArrComic);
             }
             handleBoxExtra();
-        } else {
-             // Sắp xếp theo lần đọc gần nhất
+        } else if (index == 3) {
+            const arrWebsite = dataWeb.arrayWebsite;
+            boxComic.innerHTML = "";
             Object.assign((boxComic).style, {
-                display: "grid"
-            })
-            handleRenderComic(arrComic);
+                display: "block"
+            });
+            for (let i = 0; i < arrWebsite.length; i++) {
+                const getNameWeb = arrWebsite[i].nameWeb.toLowerCase();
+                const newArrComic = arrComic.filter((item) => {
+                    return item.nameHref.toLowerCase().includes(xoa_dau(getNameWeb));
+                });
+                if (newArrComic.length >= 1) {
+                    const h2 = document.createElement('h2');
+                    const div = document.createElement('div');
+                    h2.innerText = getNameWeb;
+                    div.className = "genre-wrap";
+                    div.innerHTML = newArrComic.map(renderComic).join("")
+                    boxComic.appendChild(h2);
+                    boxComic.appendChild(div);
+                }
+            };
             handleBoxExtra();
-        }; 
+            function xoa_dau(str) {
+                str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+                str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+                str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+                str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+                str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+                str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+                str = str.replace(/đ/g, "d");
+                str = str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g, "A");
+                str = str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g, "E");
+                str = str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g, "I");
+                str = str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g, "O");
+                str = str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, "U");
+                str = str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g, "Y");
+                str = str.replace(/Đ/g, "D");
+                str = str.replace(/ /g, "");
+                return str;
+            };
+        } 
         function handleRenderComic(arrComic) {
             boxComic.innerHTML = arrComic.map(renderComic).join("");
             insertValueComic(arrComic);
@@ -342,9 +376,9 @@ function handleBoxComic(arrComic, idComic) {
                         const updateDay = getPassDay[1] + "-" + getPassDay[0] + "-" + getPassDay[2];
                         const getPassHour = arrPassDate[1].split(' ')[0].split(":");
                         const getPassOn = arrPassDate[1].split(' ')[1];
-                        handleDatetoPage(arrPassDate, updateDay, getPassDay, getPassHour, getPassOn, i);
+                        handleDatetoPage(updateDay, getPassDay, getPassHour, getPassOn, i);
                     }
-                    function handleDatetoPage(arrPassDate, updateDay, getPassDay, getPassHour, getPassOn, i) {
+                    function handleDatetoPage(updateDay, getPassDay, getPassHour, getPassOn, i) {
                         // Tinh toan tim gia tri
                         let getYear =  +getToDay[2] - getPassDay[2];
                         let getMonth =  +getToDay[0] - getPassDay[0];
@@ -530,6 +564,7 @@ function handleBoxWebsite(arrWebsite) {
 function handleBoxExtra() {
     const extraBtns = zz('.extra-btn');
     const editBtns = zz('.comic-i_edit');
+    const listNameComic = zz('.ci_name-comic');
     const postBtn = z('.box-extra_btn')
     const btnHandle = zz('.be_col-handle span');
     const statusComic = z('#status-comic');
@@ -551,7 +586,11 @@ function handleBoxExtra() {
         });
         arrComic.length >= 1 ?  editBtns.forEach((btn, index) => {
             btn.onclick = () => {
-                renderValueComic(index); openBox(); 
+                const getNameComic = listNameComic[index].innerText.toLowerCase();
+                const idArr = arrComic.findIndex((item) => {
+                    return item.nameComic.toLowerCase().includes(getNameComic);
+                })
+                renderValueComic(idArr); openBox(); 
             };
         }) : console.log("Chưa có dữ liệu!");
         anotherBtn.onclick = () => {
@@ -562,6 +601,7 @@ function handleBoxExtra() {
             boxExtra.classList.add('close');
             overLay.classList.add('close');
             boxGenre.classList.remove('open');
+            z('.list-nav').classList.remove('open');
             navIcon[0].classList.remove('close');
             for (let i = 1; i < (navIcon.length); i++) {
                 navIcon[i].classList.add('close');
@@ -574,8 +614,8 @@ function handleBoxExtra() {
     } displayElement();
     // arrComic
     function renderValueComic(index) {
+        let nowComic = arrComic[index];
         function renderInput() {
-            let nowComic = arrComic[index]
             inputs[0].value = nowComic.nameComic;
             inputs[1].value = nowComic.nameCharacter;
             inputs[2].value = nowComic.nameHref;
@@ -592,7 +632,6 @@ function handleBoxExtra() {
             postBtn.innerText = "Cập nhật truyện";
             btnHandle[0].classList.remove('close');
         } renderValue();
-        let nowComic = arrComic[index];
         postBtn.onclick = () => {
             let removeComic = arrComic.findIndex(item => item.nameComic == nowComic.nameComic);
             arrComic.splice(removeComic, 1 );
@@ -685,6 +724,7 @@ function handleBoxExtra() {
         }
         return x;
     };   
+    ligthToggle();
 } handleBoxExtra();
 /* -------------------------------------------------------------------*/
 function ligthToggle() {

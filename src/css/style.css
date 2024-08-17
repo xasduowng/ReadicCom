@@ -250,6 +250,11 @@
     margin: 0 auto;
     padding: 6px;
 }
+.box-comic h2 {
+    color: #253e7b;
+    font-weight: 600;
+    text-transform: capitalize;
+}
 .box-comic .genre-wrap{
     display: grid;
     grid-template-columns: repeat(5,1fr);
@@ -301,6 +306,7 @@
     background: rgba(0,0,0,0.4);
     color: white;
     text-shadow: 1px 2px 3px black;
+    border-radius: 14px 3px;
 }
 .comic-i_edit{
     position: absolute;
@@ -358,7 +364,7 @@
 
 /* Box extra */
 .box-extra{
-    width: 800px;
+    width: 940px;
     background: rgb(139, 139, 139);
     padding: 12px;
     grid-template-columns: 5fr 2fr;
@@ -444,7 +450,7 @@ form input{
     margin: 12px auto;
 }
 .be_col-img{
-    width: 100%; height: 260px;
+    width: 100%; height: 280px;
 }
 .be_col-name{
     color: white;
