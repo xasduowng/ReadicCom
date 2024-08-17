@@ -1,4 +1,4 @@
-import {getApi, postApi, handleLink} from "./function.js";
+import {getApi, postApi} from "./function.js";
 //-------------------------------
 const z = document.querySelector.bind(document);
 const zz = document.querySelectorAll.bind(document);
@@ -477,36 +477,39 @@ function handleBoxWebsite(arrWebsite) {
     const inputs = zz('.box-web_input input');
     const btnWeb = z('.btn-web');
     const extraWeb = zz('.extra-web span');
-    const webList = z('.box-web_list');
+    const webBox = z('.box-web_list');
     function eventExtraWeb() {
         arrWebsite.length >= 1 ? (renderWebsite(), moveMouseEnter()): renderEmty();
-        inputs[1].oninput = () => {
-            if (inputs[1].value.length >= 5 && extraWeb[0].innerText.toLowerCase() == "thêm website") {
-                extraWeb[0].onclick = () => {postWeb(); location.reload();}
-            }
-        }
         function moveMouseEnter() {
             const webBtns = zz('.box-web_list a');
             webBtns.forEach((btn, index) => {
                 btn.onmouseenter = () => {
                     inputs[0].value = arrWebsite[index].nameWeb;
                     inputs[1].value = arrWebsite[index].linkWeb;
-                    extraWeb[0].innerText = "Sửa website";
-                    extraWeb[1].classList.remove("close");
+                    extraWeb[1].classList.remove('close');
+                    extraWeb[1].innerText = "Sửa truyện tranh";
+                    extraWeb[2].classList.remove('close');
                     extraWeb[0].onclick = () => {
-                        let currentWeb = arrWebsite.findIndex((item) => {
-                            return item.nameWeb == inputs[0].value;
-                        });
-                        arrWebsite.splice(currentWeb, 1 );
-                        dataWeb.arrayWebsite = arrWebsite;
-                        postWeb();
-                    }
+                        extraWeb[1].classList.add('close');
+                        extraWeb[2].classList.add('close');
+                        inputs[0].value = ""; inputs[1].value = "";
+                        extraWeb[0].onclick = () => {postWeb(arrWebsite)};
+                    };
                     extraWeb[1].onclick = () => {
-                        let currentWeb = arrWebsite.findIndex((item) => {
-                            return item.nameWeb == inputs[0].value;
-                        });
-                        arrWebsite.splice(currentWeb, 1 );
-                        let x = confirm("Bạn có muốn xóa website hiện tại không?");
+                        let getNameWeb = webBtns[index].innerText;
+                        const getIdWeb = arrWebsite.findIndex((item) => {
+                            return item.nameWeb.toLowerCase().includes(getNameWeb);
+                        })
+                        arrWebsite.splice(getIdWeb, 1 );
+                        postWeb(arrWebsite);
+                    };
+                    extraWeb[2].onclick = () => {
+                        let getNameWeb = webBtns[index].innerText;
+                        const getIdWeb = arrWebsite.findIndex((item) => {
+                            return item.nameWeb.toLowerCase().includes(getNameWeb);
+                        })
+                        arrWebsite.splice(getIdWeb, 1 );
+                        let x = confirm("Bạn có muốn xóa '" + getNameWeb + "' khỏi danh sách website hiện tại không?");
                         if(x == 1) {
                             dataWeb.arrayWebsite = arrWebsite;
                             postApi("dataWeb", dataWeb);
@@ -514,23 +517,25 @@ function handleBoxWebsite(arrWebsite) {
                         } else{
                             console.log("Không cập nhật!");
                         }
-                       
                     }
-                };
+                }
             });
+            extraWeb[0].onclick = () => {postWeb()};
         } ;
-        function postWeb() {
+        function postWeb(arrWebsite) {
             let obj = {
                 nameWeb: inputs[0].value.length >=5 ? inputs[0].value : "readicWeb",
                 linkWeb: inputs[1].value.length >=5 ? inputs[1].value : "#"
             }
-            arrWebsite.push(obj);
-            dataWeb.arrayWebsite = arrWebsite;
-                postApi("dataWeb", dataWeb);
-            location.reload();
+            if (inputs[1].value.length >=5) {
+                arrWebsite.push(obj);
+                dataWeb.arrayWebsite = arrWebsite;
+                    postApi("dataWeb", dataWeb);
+                location.reload();
+            }
         }
         function renderEmty() {
-            webList.innerText = "Bạn vẫn chưa thêm website!"
+            webBox.innerText = "Bạn vẫn chưa thêm website!"
         }
     } eventExtraWeb();
     function eventPostWeb() {
@@ -551,7 +556,7 @@ function handleBoxWebsite(arrWebsite) {
         }
     } eventPostWeb();
     function renderWebsite() {
-        webList.innerHTML = arrWebsite.map((item) => {
+        webBox.innerHTML = arrWebsite.map((item) => {
             let {nameWeb, linkWeb} = item;
             return (`
                 <a href=${linkWeb} target="_blank">${nameWeb}</a>
@@ -675,13 +680,14 @@ function handleBoxExtra() {
             inputs[3].oninput = () => imgC.src = inputs[3].value;
         } renderValue();
         postBtn.onclick = () => {
-                handleChapHref (inputs[2].value, inputs[5].value);
+            handleChapHref (inputs[2].value, inputs[5].value);
             arrComic.push(getValueInput());
             dataWeb.arrayComic = arrComic;
                 postApi("dataWeb", dataWeb);
-            location.reload();
+            // location.reload();
         };
     } 
+    // handleChapHref()---
     function handleChapHref (nameHref, nameChap) {
         const nameWebsite = (nameHref.split("/")[2]).split(".")[0];
         if(nameWebsite.includes("truyenqq")){
@@ -698,10 +704,29 @@ function handleBoxExtra() {
             // https://goctruyentranhvui2.com/truyen/ta-la-ta-de/chuong-472
             let createLinkChap = nameHref + "/chuong-" + nameChap;
             postHref (createLinkChap);
-        } else { postHref (nameHref)};
+        } else if(nameWebsite.includes("mangakakalot")) {
+                // https://ww8.mangakakalot.tv/manga/manga-zl1003294
+                // https://ww8.mangakakalot.tv/chapter/manga-zl1003294/chapter-1
+            let getNameComic = nameHref.replace("manga", "chapter");
+            let createLinkChap = getNameComic + "/chapter-" + nameChap;
+            postHref (createLinkChap);
+        } else if(nameWebsite.includes("mangafire")) {
+                // https://mangafire.to/manga/the-artistic-genius-of-music-is-the-reincarnation-of-paganini.zxjqw
+                // https://mangafire.to/read/the-artistic-genius-of-music-is-the-reincarnation-of-paganini.zxjqw/en/chapter-1
+            let getNameComic = nameHref.replace("manga", "read");
+            let createLinkChap = getNameComic + "/en/chapter-" + nameChap;
+            postHref (createLinkChap);
+        } else if(nameWebsite.includes("manhuatop")) {
+                // https://manhuatop.org/manhua/the-beginning-after-the-end/
+                // https://manhuatop.org/manhua/the-beginning-after-the-end/chapter-175/
+            let createLinkChap = nameHref + "chapter-" + nameChap;
+            postHref (createLinkChap);
+        } 
+        else { postHref (nameHref)};
         function postHref(chapHref) {
             dataWeb.statusWeb.chapterHref = chapHref;
             postApi("dataWeb", dataWeb);
+            console.log(chapHref)
         }
     };
     function getValueInput() {

@@ -600,15 +600,13 @@ form input{
 }
 .box-web_input .extra-web span,
 .btn-web{
-    width: 200px;
-    margin: 20px auto;
     text-align: center;
     padding: 8px 12px; 
     border-radius: 5px;
     color: white;
     text-transform: uppercase;
-    font-size: 18px;
     font-weight: 600;
+    text-align: center;
     cursor: pointer;
 }
 .box-web_input label{
@@ -624,22 +622,22 @@ form input{
 }
 .btn-web{
     background: rgb(32, 32, 32);
-
+    margin: 20px auto;
+    width: 300px;
+    text-align: center;
 }
 .box-web_input .extra-web {
-    display: flex;
+    display: block;
     gap: 12px;
-    width: 300px;
-    margin: 12px auto;
+    margin: 28px auto;
+    text-align: center;
 }
 .box-web_input .extra-web  span:first-child {
     background: rgb(46, 46, 46);
     font-size: 16px;
-    width: 80%;
 
 }
 .box-web_input .extra-web span:last-child {
     background: var(--web);
     font-size: 16px;
-
 }
