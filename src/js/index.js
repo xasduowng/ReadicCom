@@ -281,8 +281,11 @@ function handleBoxComic(arrComic, idFilter) {
         const newArrComic = arrComic.filter((item) => {
             return item.nameHref.toLowerCase().includes(xoa_dau(getNameWeb));
         });
-        newArrComic.length >=1 ? (z('.sld.close').classList.remove('close'))
-            : console.log("Chưa có dữ liệu!")
+        if (newArrComic.length >=1) {
+            if(z('.sld.close')){
+                z('.sld.close').classList.remove('close')
+            }
+        }
     }
     // --------------------------------//
     comicNavs.forEach((comic, index) => {
