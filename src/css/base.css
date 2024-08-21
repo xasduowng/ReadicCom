@@ -72,42 +72,47 @@ img{
 .choose{
     border: 1px solid var(--web);
 }
-#back-top{
-}
-#web-fixed p, #web-fixed a,
+#web-fixed p, #web-fixed .back-top,
 #web-fixed i{
-    position: fixed;
     text-shadow: 1px 2px 3px var(--web);
     z-index: 4;
 }
 .nav-icon{
+    position: fixed;
     transition: 0.6s;
 }
 .nav-icon.i1{
-    bottom: 20px; right: 20px;
+    bottom: 20px; right: 40px;
     font-size: 38px;
     color: #2658c9;
 }
 .nav-icon.i4{
-    bottom: 20px; right: 22px;
+    bottom: 20px; right: 42px;
     font-size: 40px;
     color: #2658c9;
 }
 .nav-icon.i2{
-    bottom: 8%;
-    right: 126px;
+    bottom: 7%;
+    right: 100px;
     font-size: 36px;
     color: white;
 }
 .nav-icon.i3{
-    bottom: 20%;
-    right: 50px;
+    bottom: 15%;
+    right: 25px;
     font-size: 36px;
     color: tomato;
+    z-index: 4
 }
 .nav-icon.i5{
-    bottom: 10%;
-    right: 66px;
+    bottom: 14%;
+    right: 68px;
     font-size: 28px;
     color: green;
+}
+.nav-icon.i6{
+    bottom: 2%;
+    right: 120px;
+    font-size: 28px;
+    color: #d4f327;
 }

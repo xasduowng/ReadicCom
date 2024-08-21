@@ -1,4 +1,4 @@
-import {getApi, postApi} from "./function.js";
+import {getApi, postApi, xoa_dau} from "./function.js";
 //-------------------------------
 const z = document.querySelector.bind(document);
 const zz = document.querySelectorAll.bind(document);
@@ -12,7 +12,9 @@ const zz = document.querySelectorAll.bind(document);
         "arrayGenre": [],
         "statusWeb": {
             chapterHref: "none",
-            idComic: 0,
+            idFilter: 0,
+            idRandom: "none"
+
         }
     }
     // Ham dung de day mang ban dau len LocalStorage
@@ -28,6 +30,8 @@ const boxExtra = z('.box-extra');
 const boxGenre = z('.box-genre_list');
 const size = screen.width; 
 const navIcon = zz('.nav-icon');
+const boxNav = z('#box-nav');
+const btnNav = z('.box-nav_close');
 /* -------------------------------------------------------------------*/
 function handleNavIcon() {
     navIcon[0].onclick = () => {openNav()};
@@ -46,6 +50,18 @@ function handleNavIcon() {
         for (let i = 1; i < navIcon.length; i++) {
             navIcon[i].classList.remove('close');
         }
+    };
+    navIcon[5].onclick = () => {
+        boxNav.style = "left: 0"
+        overLay.classList.remove('close')
+    }
+    btnNav.onclick = () => {
+        boxNav.style = "left: -600px";
+        overLay.classList.remove('close');
+    }
+    z('.genre-web').onclick = () => {
+        boxNav.style = "left: 0"
+        overLay.classList.remove('close')
     }
 } handleNavIcon();
 /* -------------------------------------------------------------------*/
@@ -61,9 +77,9 @@ function handleNavWeb() {
         overLay.onclick = () => {
             overLay.classList.add('close');
             boxGenre.classList.remove('open');
-            boxExtra.classList.add('close')
+            boxExtra.classList.add('close');
         }
-        z('.bgl-comic_close').onclick = () => {
+        z('.bg_list-close').onclick = () => {
             boxGenre.classList.remove('open');
             boxExtra.classList.add('close')
             z('.list-nav').classList.remove('open');
@@ -78,148 +94,200 @@ function handleNavWeb() {
 } handleNavWeb();
 /* -------------------------------------------------------------------*/
 const dataWeb = getApi ("dataWeb");
-const arrComic = dataWeb.arrayComic;
-const idComic = (dataWeb.statusWeb).idComic;
-    arrComic.length >= 1 ? handleBoxComic(arrComic, idComic)
-        : console.log("Chưa có dữ liệu!");
+const idFilter = (dataWeb.statusWeb).idFilter;
 const arrWebsite = dataWeb.arrayWebsite;
-    arrWebsite.length >=1 ? (z('.sld.close').classList.remove('close'))
-        : console.log("Chưa có dữ liệu!")
-    handleBoxWebsite(arrWebsite);
+handleBoxWebsite(arrWebsite);
+const arrComic = dataWeb.arrayComic;
+    arrComic.length >= 1 ? (handleBoxComic(arrComic, idFilter), handleBoxGenre())
+        : console.log("Chưa có dữ liệu!");
 /* -------------------------------------------------------------------*/
 function handleBoxGenre() {
-    if (arrComic.length >= 1) {
+    function getArrGenre() {
         const arrGenre = [];
-        function getArrGenre() {
-            for (let i = 0; i < arrComic.length; i++) {
-                let x = arrComic[i].arrayGenre;
-                for (let j = 0; j < x.length; j++) {
-                    let y = x[j].toLowerCase();
-                    arrGenre.push(y)
-                }
+        for (let i = 0; i < arrComic.length; i++) {
+            let x = arrComic[i].arrayGenre;
+            for (let j = 0; j < x.length; j++) {
+                let y = x[j].toLowerCase();
+                arrGenre.push(y)
             }
-                // Xoa cac phan tu trung lap trong mang
-            let arrayGenre = (Array.from(new Set(arrGenre))).sort();
-            dataWeb.arrayGenre = arrayGenre;
-            postApi("dataWeb", dataWeb);
-            return arrayGenre; ;
-        } ;
-        // Xu ly danh sach the loai truyen-----------------------------------
-        const arrayGenre = getArrGenre();
-        const boxGenre = z('.bg_list-genre');
-        for (let i = 0; i < arrayGenre.length; i++) {
-            let a  = document.createElement('a');
-            a.className = 'btn';
-            a.href = "#" + arrayGenre[i];
-            a.innerText = arrayGenre[i];
-            boxGenre.appendChild(a); 
-        }
-        // Ham nay dung de tim kiem the loai--------------------------------
-        const listGenre = zz('.bg_list-genre a');
-        const genreTitle = z('.comic_genre-title span');
-        function handleComicSearch() {
-            const inputSearch = z('.bg_list-search');
-            const newArr = [];
-            for (let i = 0; i< arrayGenre.length; i++) {
-                let x = {
-                    nameGenre: arrayGenre[i]
-                }
-                newArr.push(x);
-            }
-            inputSearch.oninput = () => {
-                const valInput = inputSearch.value.toLowerCase();
-                const newGenre = newArr.filter((val) => {
-                    return val.nameGenre.includes(valInput)
-                })
-                boxGenre.innerHTML = newGenre.map((item) => {
-                    let {nameGenre} = item;
-                    return (`
-                        <span class="btn">${nameGenre}</span>
-                        `)
-                }).join("");
-                handleGenre(zz('.bg_list-genre a'))
-                zz('.bg_list-genre a')[0].classList.add('choose');
-                handleGenre(zz('.bg_list-genre a'))
-            }
-        } handleComicSearch();
-        // Xu ly viec tai ra danh sach truyen theo ngau nhien---------------
-        function handleComicRandom() {
-            let rd1 = Math.floor(Math.random()*arrayGenre.length);
-            listGenre[rd1].classList.add('choose');
-            let newArr = arrComic.filter((a) => {
-                return a.listGenre.toLowerCase().includes(arrayGenre[rd1].toLowerCase());        
-            })
-            renderG(newArr, arrayGenre[rd1]); renderComic(newArr);
-            let rd2 = Math.floor((Math.random() * newArr.length));
-            function renderRandom() {
-                const name = z('.box-genre_random > p');
-                const links = zz('.bg_random-link a');
-                const img = z('.bg_random-img img');
-                const ranComic = newArr[rd2];
-                name.innerText = ranComic.nameComic;
-                z('.bg_random-img').href = ranComic.nameHref;
-                links[0].href = ranComic.nameHref;
-                links[1].href = ranComic.chapterHref;
-                links[1].innerText = "Chương " + ranComic.nameChap;
-                img.src = ranComic.imgHref;
-                genreTitle.innerText = listGenre[rd1].innerText;
-                // z('.box-genre_backgr').src = ranComic.imgHref;
-            } renderRandom();
-        } handleComicRandom();
-        function handleGenre(listGenre) {
-            listGenre.forEach((genre, index) => {
-                genre.onclick = () => {
-                    z('.bg_list-genre a.choose').classList.remove('choose');
-                    listGenre[index].classList.add('choose');
-                    let currentGenre = genre.innerText.toLowerCase();
-                    genreTitle.innerText = listGenre[index].innerText;
-                    let newArr = arrComic.filter((a) => {
-                        return a.listGenre.toLowerCase().includes(currentGenre);        
-                    })
-                    renderG(newArr, genre.innerText)
-                    renderComic(newArr);
-                }
-            })
-        } handleGenre(listGenre);
-        function renderG(newArr, nameGenre) {
-            const sections = zz('.bg_list-comic section');
-            sections[0].innerText = newArr.length;
-            sections[1].innerText = nameGenre;
-        }
-        function renderComic(newArr) {
-            const genreBox = z('.comic_genre-box');
-            genreBox.innerHTML = newArr.map((item) => {
-                let {nameComic, chapterHref, nameChap, imgHref, nameHref} = item;
-                return (`
-                    <div class="genre-box_item">
-                        <a>
-                            <img src=${imgHref} alt="">
-                        </a>
-                        <div>
-                            <a href=${nameHref} class="genre-box_name name" target="_blank">${nameComic}</a>
-                            <a href=${chapterHref} class="genre-box_chap" target="_blank">Chương ${nameChap}</a>
-                        </div>
-                    </div>
-                `)
-            }).join('');
-            function insertIdComic() {
-                const nameLinks = zz('.genre-box_item > a');
-                nameLinks.forEach((link, index) => {
-                    link.href = "#" + newArr[index].nameComic;
-                })
-            } insertIdComic();
         };
-    }
-}  handleBoxGenre();
+            // Xoa cac phan tu trung lap trong mang
+        let arrayGenre = (Array.from(new Set(arrGenre))).sort();
+        const newArr = [];
+        for (let i = 0; i< arrayGenre.length; i++) {
+            let x = {
+                    nameGenre: arrayGenre[i],
+                    vietToEng: xoa_dau(arrayGenre[i])
+                }
+            newArr.push(x);
+        }
+        return newArr;
+    }; 
+    const arrGenre = getArrGenre();
+    dataWeb.arrayGenre = arrGenre;
+    postApi("dataWeb", dataWeb); 
+        // Tra ve danh sach the loai truyen-----------------------------------
+    const boxGenre = z('.bg_list-genre');
+    const boxNavGenre = z('.box-nav_genre');
+    //  ---------------------------------------  //
+    function renderListGenre(array) {
+        boxGenre.innerHTML = array.map(renderList).join('');
+        boxNavGenre.innerHTML = array.map(renderList).join('');
+        function renderList(item) {
+            const {nameGenre} = item;
+            return (`
+                <a class="btn">${nameGenre}</a>
+            `)
+        }
+        for(let i = 0; i < array.length; i++) {
+            zz('.bg_list-genre a')[i].href = "#" + array[i].nameGenre;
+            zz('.box-nav_genre a')[i].href = "#" + array[i].nameGenre;
+        }
+    } renderListGenre(arrGenre);
+    // Tra ve mot truyen truyen ngau nhien--------------------------------  
+    const genreTitle = z('.comic_genre-title span');
+    function handleComicRandom() {
+        let rd1 = Math.floor(Math.random()*arrGenre.length);
+            dataWeb.statusWeb.idRandom = rd1;
+            postApi('dataWeb', dataWeb);
+        let genre = arrGenre[rd1].nameGenre.toLowerCase();
+        let newArr = arrComic.filter((item) => {
+            return item.listGenre.toLowerCase().includes(genre);        
+        })
+        renderComicGenre(newArr);
+        // renderG(newArr, arrGenre[rd1]);
+        let rd2 = Math.floor((Math.random() * newArr.length));
+        function renderRandom() {
+            const name = z('.box-genre_random > p');
+            const links = zz('.bg_random-link a');
+            const img = z('.bg_random-img img');
+            const ranComic = newArr[rd2];
+            name.innerText = ranComic.nameComic;
+            z('.bg_random-img').href = ranComic.nameHref;
+            links[0].href = ranComic.nameHref;
+            links[1].href = ranComic.chapterHref;
+            links[1].innerText = "Chương " + ranComic.nameChap;
+            img.src = ranComic.imgHref;
+            genreTitle.innerText = arrGenre[rd1].innerText;
+        } renderRandom();
+    } handleComicRandom();
+    //  ---------------------------------------  //
+    function handleClickGenre() {
+        const listGenre1 = zz('.bg_list-genre a');
+        const listGenre2 = zz('.box-nav_genre a');
+        let getIdRandom = getApi("dataWeb").statusWeb.idRandom;
+        genreTitle.innerText = arrGenre[getIdRandom].nameGenre;
+        arrGenre.length >= 1 ? ( 
+            listGenre1[getIdRandom].classList.add('choose'),
+            listGenre2[getIdRandom].classList.add('choose')
+        ) : console.log("Không tìm thấy thể loại!")
+            listGenre1.forEach((ele, index) => {
+                ele.onclick = () => {
+                    displayElement(ele, index);
+                    listGenre2[index].classList.add('choose');
+                }
+            });
+            listGenre2.forEach((ele, index) => {
+                ele.onclick = () => {
+                    displayElement(ele, index);
+                    listGenre1[index].classList.add('choose');
+                }
+            });
+    } handleClickGenre();
+    //  ---------------------------------------  //
+    function displayElement(ele, index) {
+        z('.bg_list-genre a.choose').classList.remove('choose');
+        z('.box-nav_genre a.choose').classList.remove('choose');
+        ele.classList.add('choose');
+        // ------
+        genreTitle.innerText = ele.innerText;
+
+        // ------
+        dataWeb.statusWeb.idRandom = index;
+        postApi('dataWeb', dataWeb);
+        // ------
+        let genre = ele.innerText.toLowerCase();
+        let newArr = arrComic.filter((item) => {
+            return item.listGenre.toLowerCase().includes(genre);        
+        });
+        renderComicGenre(newArr);
+        }
+    // Ham nay dung de tim kiem the loai--------------------------------
+    function handleComicSearch() {
+        const inputSearch = zz('.search-input');
+        inputSearch.forEach((ele, index) => {
+            ele.oninput = () => {
+                if (index == 0) {inputSearch[1].value = ele.value;}
+                else if (index == 1) {inputSearch[0].value = ele.value;}
+                searchGenre(xoa_dau(ele.value.toLowerCase()));
+            }; 
+        })
+        function searchGenre(value) {
+            const valInput = value;
+            const newGenre = arrGenre.filter((val) => {
+                return val.vietToEng.includes(valInput)
+            })
+            dataWeb.statusWeb.idRandom = 0;
+            postApi('dataWeb', dataWeb);
+            renderListGenre(newGenre); handleClickGenre();
+            newGenre.length >= 1 ? ( 
+                zz('.bg_list-genre a')[0].classList.add('choose'),
+                zz('.box-nav_genre a')[0].classList.add('choose')
+            ) : console.log("Không tìm thấy thể loại!");
+            // Neu nguoi nhap tim duoc mot the loai no se tra ve mang do
+            if (newGenre.length == 1) {
+                const genre = zz('.bg_list-genre a')[0].innerText.toLowerCase();
+                genreTitle.innerText = zz('.bg_list-genre a')[0].innerText;
+                let newArr = arrComic.filter((item) => {
+                    return item.listGenre.toLowerCase().includes(genre);        
+                }); renderComicGenre(newArr);
+            }
+        }
+    } handleComicSearch();
+    // Xu ly viec tai ra danh sach truyen theo ngau nhien---------------
+    function renderComicGenre(newArr) {
+        const genreBox = z('.comic_genre-box');
+        genreBox.innerHTML = newArr.map((item) => {
+            let {nameComic, chapterHref, nameChap, imgHref, nameHref} = item;
+            return (`
+                <div class="genre-box_item">
+                    <a>
+                        <img src=${imgHref} alt="">
+                    </a>
+                    <div>
+                        <a href=${nameHref} class="genre-box_name name" target="_blank">${nameComic}</a>
+                        <a href=${chapterHref} class="genre-box_chap" target="_blank">Chương ${nameChap}</a>
+                    </div>
+                </div>
+            `)
+        }).join('');
+        function insertIdComic() {
+            const nameLinks = zz('.genre-box_item > a');
+            nameLinks.forEach((link, index) => {
+                link.href = "#" + newArr[index].nameComic;
+            })
+        } insertIdComic();
+    };
+} ;
 /* -------------------------------------------------------------------*/
-function handleBoxComic(arrComic, idComic) {
+function handleBoxComic(arrComic, idFilter) {
     const boxComic = z('.box-comic');
     var today = new Date().toLocaleString("en-US", {timeZone: "Asia/Jakarta"});
     const comicNavs = zz('.box-comic_nav span');
-    comicNavs[idComic].classList.add('choose');
+    comicNavs[idFilter].classList.add('choose');
+    // --------------------------------//
+    for (let i = 0; i < arrWebsite.length; i++) {
+        const getNameWeb = arrWebsite[i].nameWeb.toLowerCase();
+        const newArrComic = arrComic.filter((item) => {
+            return item.nameHref.toLowerCase().includes(xoa_dau(getNameWeb));
+        });
+        newArrComic.length >=1 ? (z('.sld.close').classList.remove('close'))
+            : console.log("Chưa có dữ liệu!")
+    }
+    // --------------------------------//
     comicNavs.forEach((comic, index) => {
         comic.onclick = () => {
-            dataWeb.statusWeb.idComic = index;
+            dataWeb.statusWeb.idFilter = index;
             postApi("dataWeb", dataWeb);
             // ----------------------------------
             z('.box-comic_nav span.choose').classList.remove('choose');
@@ -230,7 +298,7 @@ function handleBoxComic(arrComic, idComic) {
                 })
         }
     }); 
-    if (idComic == 2) {$('.box-comic_genre').slideUp();}
+    if (idFilter == 2) {$('.box-comic_genre').slideUp();}
     $('.comic_nav-genre').click(function() {
         $('.box-comic_genre').slideUp(600);
     })
@@ -269,27 +337,26 @@ function handleBoxComic(arrComic, idComic) {
             Object.assign((boxComic).style, {
                 display: "block"
             });
-            const arrGenre = dataWeb.arrayGenre.sort();
+            const arrGenre = dataWeb.arrayGenre;
             const lengthGenre = arrGenre.length;
             for (let i = 0; i < lengthGenre; i++) {
                 const div = document.createElement('div');
                 const h2 = document.createElement('h2');
-                h2.id = arrGenre[i];
-                h2.innerText = (i + 1) + ". " + arrGenre[i];
+                h2.id = arrGenre[i].nameGenre;
+                h2.innerText = (i + 1) + ". " + arrGenre[i].nameGenre;
                 const newArrComic = (arrComic.filter((a) => {
-                    return a.listGenre.toLowerCase().includes(arrGenre[i]);
+                    return a.listGenre.toLowerCase().includes(arrGenre[i].nameGenre);
                 })).sort((a,b) => {
                     return b.nameChap - a.nameChap;
                 })
                 div.className = "genre-wrap";
-                div.innerHTML = newArrComic.map(renderComic).join("");
+                div.innerHTML = newArrComic.map(renderComicGenre).join("");
                 boxComic.appendChild(h2);
                 boxComic.appendChild(div);
-                // insertValueComic(newArrComic);
             }
             handleBoxExtra();
         } else if (index == 3) {
-            const arrWebsite = dataWeb.arrayWebsite;
+            // Trả về danh sách các website
             boxComic.innerHTML = "";
             Object.assign((boxComic).style, {
                 display: "block"
@@ -304,36 +371,18 @@ function handleBoxComic(arrComic, idComic) {
                     const div = document.createElement('div');
                     h2.innerText = getNameWeb;
                     div.className = "genre-wrap";
-                    div.innerHTML = newArrComic.map(renderComic).join("")
+                    div.innerHTML = newArrComic.map(renderComicGenre).join("")
                     boxComic.appendChild(h2);
                     boxComic.appendChild(div);
                 }
             };
             handleBoxExtra();
-            function xoa_dau(str) {
-                str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
-                str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
-                str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
-                str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
-                str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
-                str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
-                str = str.replace(/đ/g, "d");
-                str = str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g, "A");
-                str = str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g, "E");
-                str = str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g, "I");
-                str = str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g, "O");
-                str = str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, "U");
-                str = str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g, "Y");
-                str = str.replace(/Đ/g, "D");
-                str = str.replace(/ /g, "");
-                return str;
-            };
         } 
         function handleRenderComic(arrComic) {
-            boxComic.innerHTML = arrComic.map(renderComic).join("");
+            boxComic.innerHTML = arrComic.map(renderComicGenre).join("");
             insertValueComic(arrComic);
         };
-            function renderComic(item) {
+            function renderComicGenre(item) {
                 let {nameComic, nameHref, imgHref, nameChap,statusComic,nameCharacter, chapterHref} = item;
                 return (`
                 <div class="comic-item">
@@ -470,8 +519,12 @@ function handleBoxComic(arrComic, idComic) {
                 } renderAnotherWeb();
             };
         
-    } handleArrComic(idComic)
+    } handleArrComic(idFilter)
 } ;
+/* -------------------------------------------------------------------*/
+function handleBoxNav() {
+    
+} handleBoxNav();
 /* -------------------------------------------------------------------*/
 function handleBoxWebsite(arrWebsite) {
     const inputs = zz('.box-web_input input');
@@ -487,7 +540,7 @@ function handleBoxWebsite(arrWebsite) {
                     inputs[0].value = arrWebsite[index].nameWeb;
                     inputs[1].value = arrWebsite[index].linkWeb;
                     extraWeb[1].classList.remove('close');
-                    extraWeb[1].innerText = "Sửa truyện tranh";
+                    extraWeb[1].innerText = "Sửa trang Web";
                     extraWeb[2].classList.remove('close');
                     extraWeb[0].onclick = () => {
                         extraWeb[1].classList.add('close');
@@ -520,8 +573,9 @@ function handleBoxWebsite(arrWebsite) {
                     }
                 }
             });
-            extraWeb[0].onclick = () => {postWeb()};
+            extraWeb[0].onclick = () => {postWeb(arrWebsite)};
         } ;
+        extraWeb[0].onclick = () => {postWeb(arrWebsite)};
         function postWeb(arrWebsite) {
             let obj = {
                 nameWeb: inputs[0].value.length >=5 ? inputs[0].value : "readicWeb",
@@ -533,7 +587,7 @@ function handleBoxWebsite(arrWebsite) {
                     postApi("dataWeb", dataWeb);
                 location.reload();
             }
-        }
+        } postWeb();
         function renderEmty() {
             webBox.innerText = "Bạn vẫn chưa thêm website!"
         }
@@ -587,7 +641,8 @@ function handleBoxExtra() {
                 getValueComic();
             };
             overLay.onclick = () => {closeBox()};
-            btnHandle[1].onclick = () => {closeBox()}
+            btnHandle[1].onclick = () => {closeBox()};
+            btnNav.onclick = () => {closeBox()};
         });
         arrComic.length >= 1 ?  editBtns.forEach((btn, index) => {
             btn.onclick = () => {
@@ -608,6 +663,8 @@ function handleBoxExtra() {
             boxGenre.classList.remove('open');
             z('.list-nav').classList.remove('open');
             navIcon[0].classList.remove('close');
+            boxNav.style = "left: -600px";
+
             for (let i = 1; i < (navIcon.length); i++) {
                 navIcon[i].classList.add('close');
         }
@@ -681,15 +738,16 @@ function handleBoxExtra() {
         } renderValue();
         postBtn.onclick = () => {
             handleChapHref (inputs[2].value, inputs[5].value);
+            console.log(getApi("dataWeb").statusWeb.chapterHref)
             arrComic.push(getValueInput());
             dataWeb.arrayComic = arrComic;
                 postApi("dataWeb", dataWeb);
-            // location.reload();
+            location.reload();
         };
     } 
     // handleChapHref()---
     function handleChapHref (nameHref, nameChap) {
-        const nameWebsite = (nameHref.split("/")[2]).split(".")[0];
+        const nameWebsite = nameHref;
         if(nameWebsite.includes("truyenqq")){
             let createLinkChap = nameHref + '-chap-' + nameChap + '.html';
             postHref (createLinkChap);
@@ -707,13 +765,13 @@ function handleBoxExtra() {
         } else if(nameWebsite.includes("mangakakalot")) {
                 // https://ww8.mangakakalot.tv/manga/manga-zl1003294
                 // https://ww8.mangakakalot.tv/chapter/manga-zl1003294/chapter-1
-            let getNameComic = nameHref.replace("manga", "chapter");
+            let getNameComic = nameHref.replace("/manga", "/chapter");
             let createLinkChap = getNameComic + "/chapter-" + nameChap;
             postHref (createLinkChap);
         } else if(nameWebsite.includes("mangafire")) {
                 // https://mangafire.to/manga/the-artistic-genius-of-music-is-the-reincarnation-of-paganini.zxjqw
                 // https://mangafire.to/read/the-artistic-genius-of-music-is-the-reincarnation-of-paganini.zxjqw/en/chapter-1
-            let getNameComic = nameHref.replace("manga", "read");
+            let getNameComic = nameHref.replace("/manga", "/read");
             let createLinkChap = getNameComic + "/en/chapter-" + nameChap;
             postHref (createLinkChap);
         } else if(nameWebsite.includes("manhuatop")) {
@@ -726,7 +784,6 @@ function handleBoxExtra() {
         function postHref(chapHref) {
             dataWeb.statusWeb.chapterHref = chapHref;
             postApi("dataWeb", dataWeb);
-            console.log(chapHref)
         }
     };
     function getValueInput() {
@@ -735,7 +792,7 @@ function handleBoxExtra() {
             nameCharacter: inputs[1].value.length >= 1 ? inputs[1].value : "ReadicChar",
             nameHref: inputs[2].value,
             imgHref: inputs[3].value.length >= 10 ? inputs[3].value : "src/img/29_10_2021(1).jpg",
-            listGenre: inputs[4].value.length >= 1 ? inputs[4].value : "Truyện",
+            listGenre: inputs[4].value.length >= 1 ? inputs[4].value : "Truyện tranh",
             nameChap: inputs[5].value.length >=1 ? inputs[5].value: 1,
             chapterHref: getApi("dataWeb").statusWeb.chapterHref, 
             arrayGenre: inputs[4].value.length >= 1 ? inputs[4].value.split(', ') : ["Truyện"],

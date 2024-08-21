@@ -23,11 +23,11 @@
             <div class="col list-nav_btn">
                 <div id="setting" class="extra-btn">Thêm truyện</div>
                 <div class="genre-web">Thể loại</div>
-                <a id="export_api" href="https://docs.google.com/spreadsheets/d/17oLLv6ondphAGp4Iang6L0YjOt-PRIevHDZMFyK5rWo/edit?usp=sharing" target="_blank">Google Sheet</a>
-                <a id="postimage" href="https://postimages.org/" target="_blank">Postimage</a>
                 <a href="#box-web" id="another_web" > Website</a>
                 <a href="#box-Api" id="array_api" class="">Mảng API</a>
                 <a href="#box-rule" id="direct-web">Hướng dẫn</a>
+                <a id="export_api" href="https://docs.google.com/spreadsheets/d/17oLLv6ondphAGp4Iang6L0YjOt-PRIevHDZMFyK5rWo/edit?usp=sharing" target="_blank">Google Sheet</a>
+                <a id="postimage" href="https://postimages.org/" target="_blank">Postimage</a>
             </div>
         </div>
     </header>
@@ -48,12 +48,9 @@
                     <div class="bg_list-title">
                         Thể loại truyện đề xuất cho bạn!
                     </div>
-                    <input class="bg_list-search" type="text" placeholder="Tìm truyện">
+                    <input class="bg_list-search search-input" type="text" placeholder="Thể loại truyện... VD: Drama">
                     <div class="bg_list-genre"><!--JS--></div>
-                    <div class="bg_list-comic">
-                        Có tổng cộng <section></section> truyện thuộc thể loại <section>+</section> 
-                        <div class="bgl-comic_close">Đóng</div>
-                    </div>
+                    <div class="bg_list-close">Đóng</div>
                 </div>
                 <img src="src/img/29_10_2021(1).jpg" alt="" class="box-genre_backgr">
                 <div class="box-genre_overlay"></div>
@@ -122,6 +119,13 @@
         <a href="#" id="back-top" class="nav-icon i3 close btn"><i class="fa-solid fa-arrow-up"></i></a>
         <i class="fa-solid fa-xmark nav-icon i4 close btn"></i>
         <a href="#box-web"><i class="fa-solid fa-globe nav-icon close i5"></i></a>
+        <i class="fa-solid fa-list nav-icon i6 close btn"></i>
+        <div id="box-nav">
+            <div class="box-nav_title">Danh sách thể loại truyện</div>
+            <input type="text" class="box-nav_input search-input" placeholder="Nhập thể loại truyện...">
+            <div class="box-nav_genre"></div>
+            <div class="box-nav_close btn">Đóng</div>
+        </div>
     </div>
     <footer>
         <div id="box-web">
@@ -172,7 +176,6 @@
                 </div>
             </div>
         </div>
-       
     </footer>
     <script type="module" src="src/js/index.js"></script>
 </body>
