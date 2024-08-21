@@ -542,8 +542,8 @@ function handleBoxWebsite(arrWebsite) {
                 btn.onmouseenter = () => {
                     inputs[0].value = arrWebsite[index].nameWeb;
                     inputs[1].value = arrWebsite[index].linkWeb;
-                    extraWeb[1].classList.remove('close');
                     extraWeb[1].innerText = "Sửa trang Web";
+                    extraWeb[1].classList.remove('close');
                     extraWeb[2].classList.remove('close');
                     extraWeb[0].onclick = () => {
                         extraWeb[1].classList.add('close');
@@ -809,17 +809,17 @@ function handleBoxExtra() {
         }
         return x;
     };   
-    ligthToggle();
+    // ligthToggle();
 } handleBoxExtra();
 /* -------------------------------------------------------------------*/
-function ligthToggle() {
-    const statusBtn = zz('.ci_infor-status');
-    setInterval(()=> {
-        for (let i = 0; i< statusBtn.length; i++) {
-            statusBtn[i].classList.toggle('light')
-        }
-    }, 1500)
-} ligthToggle();
+// function ligthToggle() {
+//     const statusBtn = zz('.ci_infor-status');
+//     setInterval(()=> {
+//         for (let i = 0; i< statusBtn.length; i++) {
+//             statusBtn[i].classList.toggle('light')
+//         }
+//     }, 1500)
+// } ligthToggle();
 /* -------------------------------------------------------------------*/
 function handlePostApi() {
     const inputs = zz('.box-inf label input');
