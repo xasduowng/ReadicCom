@@ -15,8 +15,13 @@
     <header>
         <div id="comic-head">
             <div class="col">
-                <img class="img_logo" style="width: 120px; height: 30px; object-fit: cover; border-radius: 3px" src="src/img/29_10_2021(1).jpg" alt="">
-                <span>ReadicCom</span>
+                <div>
+                    <img class="img_logo" style="width: 120px; height: 30px; object-fit: cover; border-radius: 3px" src="src/img/29_10_2021(1).jpg" alt="">
+                    <span>ReadicCom</span>
+                </div>
+                <div class="comic-head_search">
+                    <input type="text" placeholder="Tìm truyện tranh...">
+                </div>
             </div>
         </div>
         <div class="list-nav">
@@ -32,28 +37,35 @@
         </div>
     </header>
     <div id="container">
-        <div class="box-genre">
-            <div class="col dgr">
-                <div class="box-genre_random">
-                    <p class="name"></p>
-                    <a href="" class="bg_random-img" target="_blank">
-                        <img src="src/img/29_10_2021(1).jpg" alt="">
-                    </a>
-                    <div class="bg_random-link dgr">
-                        <a href="" target="_blank">Đọc truyện</a>
-                        <a href="" target="_blank">Chương </a>
+        <div id="box-suggest">
+            <div class="col">
+                <img src="src/img/29_10_2021(1).jpg" alt="">
+                <div class="overlay-back"></div>
+                <div class="box-suggest_comic"> 
+                    <img src="src/img/29_10_2021(1).jpg" alt="">
+                    <div class="suggest_comic-item">
+                        <div class="sc-item_name name">ReadicName</div>
+                        <div class="sc-item_wrap">
+                            <div class="sc-item_another">Truyện tranh: <span class="name"></span></div>
+                            <div class="sc-item_char">Nhân vật: <span></span></div>
+                            <div class="sc-item_href">Đường dẫn truyện: <span></span></div>
+                            <div class="sc-item_up">Update: <span></span></div>
+                            <div class="sc-item_genre"> Thể loại truyện:
+                                <span><!-- JS --></span>
+                            </div>
+                            <div class="sc-item_web">Truyện được đăng tải trên website chính thức: <a href="" target="_blank"><span>ReadicCom</span></a></div>
+                        </div>
+                        <div class="sc-item_read">
+                            <a href="" target="_blank">Đọc truyện tranh</a>
+                            <a href="" target="_blank">Đọc tiếp chương</a>
+                        </div>
+
                     </div>
                 </div>
-                <div class="box-genre_list" >
-                    <div class="bg_list-title">
-                        Thể loại truyện đề xuất cho bạn!
-                    </div>
-                    <input class="bg_list-search search-input" type="text" placeholder="Thể loại truyện... VD: Drama">
-                    <div class="bg_list-genre"><!--JS--></div>
-                    <div class="bg_list-close">Đóng</div>
+                <div class="box-suggest_nav">
+                    <p>NO. <span></span></p>
+                    <div><!-- Icon--></div>
                 </div>
-                <img src="src/img/29_10_2021(1).jpg" alt="" class="box-genre_backgr">
-                <div class="box-genre_overlay"></div>
             </div>
         </div>
         <div class="box-comic_genre">
@@ -62,11 +74,13 @@
             </div>
             <div class="comic_genre-box dgr col"></div>
         </div>
-        <div class="box-comic_nav col">
-            <span class="sld">Số chương</span>
-            <span class="sld">Theo alpha</span>
-            <span class="comic_nav-genre">Theo Thể loại</span>
-            <span class="sld close" >Theo website</span>
+        <div class="box-comic_nav">
+            <div class="col">
+                <span class="sld">Số chương</span>
+                <span class="sld">Theo alpha</span>
+                <span class="comic_nav-genre">Theo Thể loại</span>
+                <span class="sld close" >Theo website</span>
+            </div>
         </div>
         <div class="box-comic col"><!--JS--></div>
         <div class="box-extra close dgr">
@@ -91,7 +105,7 @@
                         <option value="Dropped &#9785" >Drop</option>
                         <option value="Ra chậm quá &#9761">Slow</option>
                     </select>
-                    <p class="be_status-link btn">Thêm đường dẫn</p>
+                    <p class="be_status-link btn">Websites</p>
                 </div>
                 <div class="box-extra_note">Nếu bạn muốn thêm đường dẫn truyện tới website khác hãy chọn vào nút "Thêm đường dẫn"</div>
                 <div class="box-extra_another ">
@@ -114,16 +128,22 @@
     </div>
     <div id="web-fixed">
         <div id="overlay" class="close"></div>
-        <i class="fa-solid fa-bars nav-icon i1 btn"></i>
-        <p class="extra-btn btn nav-icon i2 close"><i class="fa-solid fa-plus" aria-hidden="true"></i></p>
-        <a href="#" id="back-top" class="nav-icon i3 close btn"><i class="fa-solid fa-arrow-up"></i></a>
-        <i class="fa-solid fa-xmark nav-icon i4 close btn"></i>
-        <a href="#box-web"><i class="fa-solid fa-globe nav-icon close i5"></i></a>
-        <i class="fa-solid fa-list nav-icon i6 close btn"></i>
+        <div class="web-fixed_nav">
+            <i class="fa-solid fa-bars btn"></i>
+            <i class="fa-solid fa-xmark btn close"></i>
+        </div>
+        <div class="web-fixed_icon">
+            <a href="#" id="back-top"><i class="fa-solid fa-arrow-up close"></i></a>
+            <a href="#box-web"><i class="fa-solid fa-globe close"></i></a>
+            <i class="fa-solid fa-list close btn"></i>
+            <p class="extra-btn btn"><i class="fa-solid fa-plus close" aria-hidden="true"></i></p>
+        </div>
         <div id="box-nav">
-            <div class="box-nav_title">Danh sách thể loại truyện</div>
-            <input type="text" class="box-nav_input search-input" placeholder="Nhập thể loại truyện...">
-            <div class="box-nav_genre"></div>
+            <div class="box-nav_head">
+                <p class="box-nav_title">Danh sách thể loại truyện</p>
+                <input type="text" class="box-nav_input search-input" placeholder="Nhập thể loại truyện...">
+            </div>
+            <div class="box-nav_item"></div>
             <div class="box-nav_close btn">Đóng</div>
         </div>
     </div>

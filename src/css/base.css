@@ -72,47 +72,5 @@ img{
 .choose{
     border: 1px solid var(--web);
 }
-#web-fixed p, #web-fixed .back-top,
-#web-fixed i{
-    text-shadow: 1px 2px 3px var(--web);
-    z-index: 4;
-}
-.nav-icon{
-    position: fixed;
-    transition: 0.6s;
-}
-.nav-icon.i1{
-    bottom: 20px; right: 40px;
-    font-size: 38px;
-    color: #2658c9;
-}
-.nav-icon.i4{
-    bottom: 20px; right: 42px;
-    font-size: 40px;
-    color: #2658c9;
-}
-.nav-icon.i2{
-    bottom: 7%;
-    right: 100px;
-    font-size: 36px;
-    color: white;
-}
-.nav-icon.i3{
-    bottom: 15%;
-    right: 25px;
-    font-size: 36px;
-    color: tomato;
-    z-index: 4
-}
-.nav-icon.i5{
-    bottom: 14%;
-    right: 68px;
-    font-size: 28px;
-    color: green;
-}
-.nav-icon.i6{
-    bottom: 2%;
-    right: 120px;
-    font-size: 28px;
-    color: #d4f327;
-}
+
+
