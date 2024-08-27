@@ -334,6 +334,9 @@
     font-size: 20px;
     font-weight: 600;
     text-transform: capitalize;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 8px;
 }
 .comic_genre-title span{
     padding: 5px 12px;
@@ -856,7 +859,6 @@ form input{
 
 .box-nav_item{
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
     margin: 20px 0;
     gap: 8px 12px;
     max-height: 440px;

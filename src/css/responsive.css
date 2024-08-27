@@ -10,15 +10,21 @@
 }
 @media screen and (max-width: 479px) {
     /* HEADER------------------------------------------------------- */
+    header{
+        position: relative;
+    }
     #comic-head .col{
         display: block;
     }
-    .comic-head_search{margin: 12px auto}
+    /* .comic-head_search{margin: 12px auto} */
     .comic-head_search input{
         max-width: 100%;
         display: none;
     }
     .list-nav{
+        position: absolute;
+        width: 100%;
+        z-index: 5;
         border: 1px solid rgb(48, 47, 47);
         border-radius: 18px;
         margin: 2px 2px;
@@ -35,7 +41,7 @@
     }
     /* CONTAINER------------------------------------------------- */
     #box-suggest > .col{
-        height: 485px;
+        height: 270px;
     }
     .box-suggest_comic{
         display: block;
@@ -44,28 +50,18 @@
     .box-suggest_comic img{
         position: absolute;
         top: 0; right: 0; bottom: 0; left: 0;
+        z-index: 2;
+        box-shadow: none;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: 0px 20%;
+    }
+    .suggest_comic-item{
         display: none;
     }
-    .sc-item_name{
-        display: flex;
-        align-items: center;
-        text-align: center;
-        justify-content: center;
-        text-indent: 0;
-        height: 86px;
-    }
-    .sc-item_name.name {
-        -webkit-line-clamp: 2;
-    }
-    .sc-item_read{
-        display: grid;
-        margin: 20px 12px;
-        grid-template-columns: 1fr 1fr;
-    }
-    .sc-item_read a{
-        padding: 5px 8px;
-        text-align: center;
-        font-size: 15px;
+    .box-suggest_nav{
+        bottom: 4px; right: 20px;
     }
     /*  --------------------------------------------------- */
     .comic_genre-box,
@@ -74,6 +70,9 @@
         grid-template-columns: repeat(2, 1fr);
     }
     .box-comic_nav .col{flex-wrap: wrap}
+    /*  --------------------------------------------------- */
+    .genre-box_item img{height: 200px;}
+    .genre-box_chap{top: 174px;}
     /*  --------------------------------------------------- */
     #box-web .col{
         display: block;
