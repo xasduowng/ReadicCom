@@ -15,13 +15,28 @@
     <header>
         <div id="comic-head">
             <div class="col">
-                <div>
+                <div class="comic-head_logo">
                     <img class="img_logo" style="width: 120px; height: 30px; object-fit: cover; border-radius: 3px" src="src/img/29_10_2021(1).jpg" alt="">
-                    <span>ReadicCom</span>
+                    <span class="text_logo">ReadicCom</span>
                 </div>
                 <div class="comic-head_search">
-                    <input type="text" placeholder="Tìm truyện tranh...">
+                    <input type="text" placeholder="Tìm truyện">
+                    <div class="head_search-icon">
+                        <p class="search-icon_open">O</p>
+                        <p class="search-icon_close close">C</p>
+                    </div>
+                    <div class="head_search-style close">
+                        <p>Tìm truyện tranh theo tên</p>
+                        <p>Nhập thể loại truyện</p>
+                        <p>Nhập số chương truyện</p>
+                        <p>Theo tên nhân vật chính</p>
+                    </div>
+                    <div class="head_search-box close">
+                        <div class="search-box_title">Hãy nhập từ khóa bạn muốn tìm kiếm!</div>
+                        <div class="search-box_comic"><!--JS--></div>
+                    </div>
                 </div>
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
             </div>
         </div>
         <div class="list-nav">

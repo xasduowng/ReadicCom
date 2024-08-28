@@ -14,7 +14,8 @@ const zz = document.querySelectorAll.bind(document);
             chapterHref: "none",
             idFilter: 0,
             idRandom: "none",
-            idRespon: 1
+            idRespon: 1,
+            idSearch: 0
         }
     }
     // Ham dung de day mang ban dau len LocalStorage
@@ -37,6 +38,110 @@ handleBoxWebsite(arrWebsite);
 const arrComic = dataWeb.arrayComic;
     arrComic.length >= 1 ? (handleBoxComic(arrComic, idFilter), handleBoxGenre())
         : console.log("Chưa có dữ liệu!");
+/* -------------------------------------------------------------------*/
+    // Ham xu ly o tim kiem------------------------
+function handleBoxSearch() {
+    const getIdSearch = getApi ("dataWeb").statusWeb.idSearch;
+    const searchStyle = zz('.head_search-style p');
+    const inputSearch = z('.comic-head_search input');
+    const boxComicSearch = z('.search-box_comic');
+    const searchTitle = z('.search-box_title');
+    const headSearchBox = z('.head_search-box');
+
+    (function displayElement() {
+        $('.search-icon_open').click(function() {
+            $(".search-icon_close").show();
+            $('.search-icon_open').hide();
+            $(".head_search-style").fadeIn();
+        })
+        $('.search-icon_close').click(function() {
+            $(".search-icon_close").hide();
+            $('.search-icon_open').show();
+            $(".head_search-style").fadeOut();
+        })
+    }) ();
+    function handleEventStyle() {
+        searchStyle[getIdSearch].classList.add('choose');
+        inputSearch.placeholder = searchStyle[getIdSearch].innerText + "...";
+        searchStyle.forEach((ele, index) => {
+            ele.onclick = () => {
+                z('.head_search-style p.choose').classList.remove('choose');
+                ele.classList.add('choose');
+                inputSearch.placeholder = searchStyle[index].innerText + "...";
+                if (index == 2) {
+                    inputSearch.setAttribute("type", "number");
+                    inputSearch.setAttribute("min", 0);
+                } else inputSearch.setAttribute("type", "text");
+               
+                handleEventSearch(index) 
+                dataWeb.statusWeb.idSearch = index;
+                postApi('dataWeb', dataWeb);
+                // ----------------//
+                z('.head_search-style').style = "display: none";
+                z('.search-icon_open').style = "display: block";
+                z('.search-icon_close').style = "display: none";
+            }
+        });
+        if (getIdSearch == 2) {
+            inputSearch.setAttribute("type", "number");
+            inputSearch.setAttribute("min", 0);
+        }
+    } handleEventStyle();
+    function handleEventSearch(index) {
+        inputSearch.oninput = () => {
+            let getValue = xoa_dau(inputSearch.value);
+            headSearchBox.classList.remove("close");
+            if (index == 0) {
+                let newArrComic = arrComic.filter((item) => {
+                    return xoa_dau(item.nameComic.toLowerCase()).includes(getValue);
+                });
+                renderComicSearch(newArrComic, getValue);
+            } else if (index == 1) {
+                let newArrComic = arrComic.filter((item) => {
+                    return xoa_dau(item.listGenre.toLowerCase()).includes(getValue);
+                });
+                renderComicSearch(newArrComic, getValue);
+            } else if (index == 2) {
+                let newArrComic = arrComic.filter((item) => {
+                    return +item.nameChap >= inputSearch.value;
+                });
+                console.log(newArrComic);
+                renderComicSearch(newArrComic, getValue);
+            } else {
+                let newArrComic = arrComic.filter((item) => {
+                    return xoa_dau(item.nameCharacter.toLowerCase()).includes(getValue);
+                });
+                renderComicSearch(newArrComic, getValue);
+            }
+        };
+        function renderComicSearch(arr, getValue) {
+            if (arr != []) {
+                const newArr = arr.sort((a, b) => b.nameChap - a.nameChap);
+                searchTitle.innerText = "Đã tìm thấy truyện! Có tổng cộng " + newArr.length + " truyện được tìm thấy."
+                boxComicSearch.innerHTML = newArr.map((item) => {
+                    const {nameComic, listGenre, nameChap, imgHref, nameCharacter} = item;
+                    return (`
+                        <a href="" target="_blank" class="sb_comic-item">
+                            <img src=${imgHref} alt="">
+                            <div class="sb_comic-item_wrap">
+                                <p>${nameComic}</p>
+                                <p>${listGenre}</p>
+                                <p>Chương ${nameChap}</p>
+                                <p>${nameCharacter}</p>
+                            </div>
+                        </a>
+                    `)
+                }).join("")
+                for (let i = 0; i < newArr.length; i++) {
+                    zz('.search-box_comic a')[i].href = newArr[i].nameHref;
+                }
+            } else {
+                searchTitle.innerText = "Không tìm thấy truyện!! Vui lòng nhập từ khóa khác."
+            };
+            if (getValue.length == 0) {headSearchBox.classList.add("close");}
+        } 
+    } handleEventSearch(getIdSearch);
+} handleBoxSearch();
 /* -------------------------------------------------------------------*/
     // Ham xu ly hop the loai----------------------
 function handleBoxGenre() {
@@ -110,7 +215,7 @@ function handleBoxGenre() {
                             renderRandom(currentIdComic);
                             idComic.innerText = currentIdComic + 1;
                         }
-                        setInterval(insertValue, 10000);
+                        setInterval(insertValue, 20000);
                         function insertValue() {
                             if (currentIdComic == idNewArr) {
                                 currentIdComic = 0;
@@ -144,12 +249,13 @@ function handleBoxGenre() {
                         const lengthGenre = arrGenre.length;
                         spans[4].innerHTML = "";
                         for (let i = 0; i < lengthGenre; i++){
-                            const p = document.createElement('p');
-                            p.innerText = arrGenre[i];
+                            const a = document.createElement('a');
+                            a.innerText = arrGenre[i];
+                            a.href = "#" + arrGenre[i].toLowerCase();
                             if (arrGenre[i].toLowerCase() == genre) {
-                                p.classList.add('choose');
+                                a.classList.add('choose');
                             }
-                            spans[4].appendChild(p)
+                            spans[4].appendChild(a)
                         };
                     } handleGenre();
                     function handleUpdate() {
@@ -305,7 +411,7 @@ function handleBoxComic(arrComic, idFilter) {
                 const getNameWeb = arrWebsite[i].nameWeb.toLowerCase();
                 const newArrComic = arrComic.filter((item) => {
                     return item.nameHref.toLowerCase().includes(xoa_dau(getNameWeb));
-                });
+                }).sort((a,b) => b.nameChap - a.nameChap);
                 if (newArrComic.length >= 1) {
                     const span = document.createElement('span');
                     const p1 = document.createElement('p');
@@ -397,11 +503,7 @@ function handleBoxComic(arrComic, idFilter) {
                                     if (getDate == 0) {
                                         if (getHour == 0 && getPassOn == getToOn) {
                                             if (getMinute == 0) {
-                                                if (getSecond < 1) {
-                                                    renderTimeComic1(getSecond + 60, "giây");
-                                                } else {
-                                                    renderTimeComic1(getSecond , "giây");
-                                                }
+                                                renderTimeComic1(getSecond , "giây");
                                             } else if(getMinute == 1 && getSecond < 0) {
                                                 renderTimeComic1(getSecond + 60, "giây");
                                             } else{
@@ -812,7 +914,7 @@ function handleBoxNav() {
                 const getNameWeb = arrWebsite[i].nameWeb.toLowerCase();
                 const newArrComic = arrComic.filter((item) => {
                     return item.nameHref.toLowerCase().includes(xoa_dau(getNameWeb));
-                });
+                }).sort((a,b) => b.nameChap - a.nameChap);
                 if (newArrComic.length >= 1) {
                     let x = {nameWeb: getNameWeb};
                     arrayWeb.push(x);
@@ -868,6 +970,7 @@ function handleDisplayElement() {
     const btnClose = z('.box-nav_close');
     const genreBtn = z('.genre-web');
     const numNav = navIcons.length;
+    let getIdRespon = getApi("dataWeb").statusWeb.idRespon;
     function toggleNavIcon() {
         navIcons[0].onclick = () => {showIcon()};
         navIcons[1].onclick = () => {hideIcon()};
@@ -885,7 +988,7 @@ function handleDisplayElement() {
         function hideIcon() {
             navIcons[0].classList.remove('close');
             navIcons[1].classList.add('close');
-            z('.list-nav').style="display: none";
+            if (getIdRespon == 1) {(z('.list-nav').style="display: none")} 
             for (let i = 2; i < numNav; i++) {
                 navIcons[i].classList.add('close');
             }
@@ -907,24 +1010,27 @@ function handleDisplayElement() {
     function handleNavWeb() {
         dataWeb.statusWeb.idRespon = 1;
         postApi("dataWeb", dataWeb);
-        $("#comic-head .col").click(function() {
-            $(".list-nav").slideToggle();
-        })
+        if (getIdRespon == 1) {
+            $(".comic-head_logo").click(function() {
+                $(".list-nav").slideToggle();
+            });
+            $(".search-icon").click(function() {
+                $(".comic-head_search").slideToggle();
+            }) 
+        } 
     } ;
     // Nut the loai tren nav----------------------------------
     genreBtn.onclick = () => {
         dataWeb.statusWeb.idFilter = 2;
         postApi("dataWeb", dataWeb);
         showBoxNav();  handleBoxNav();
-        // z('.sld.choose').classList.remove('choose');
-        // z('.comic_nav-genre').classList.add('choose');
     };
     // Su kien khi ban click vao lop phu----------------------
     overLay.onclick = () => {
         hideBoxNav(); hideIcon();
         overLay.classList.add('close');
         z('.box-extra').classList.add('close');
-        z('.list-nav').style="display: none";
+        getIdRespon == 1 ? (z('.list-nav').style="display: none") : console.log("Unknown");
     }
     // Nut dong trong box extra ------------------------------
     const boxExtraClose = z('.bec-handle_clo');

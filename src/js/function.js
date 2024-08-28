@@ -75,7 +75,36 @@ function handleChapHref (nameHref, nameChap) {
 };
 
 export {postApi, getApi, xoa_dau, handleChapHref}
+const arrTime = [1, 60, 3600, 86400]
+
+// ['8/6/2024', '3:33:59 PM']
+// ['7/6/2024', '3:33:59 PM']
+// 59 + 33*60 + 3*3600   AM
+// 59 + 33* 60 + 12*3600 PM 
+// ['8/28/2024', '9:39:35 AM']
 
 
+
+
+
+
+
+// if (getYear == 0) {
+//     if (getMonth == 0) {
+//         if (getDate == 0) {
+//             if (getPassOn == getToOn) {
+//                 if (getHour == 0) {
+//                     if (getMinute == 0) {
+//                         if (getSecond > 0) {
+//                             renderTimeComic1(getSecond , "giây");
+//                         }
+//                     }
+//                 }
+//             } else {
+//                 renderTimeComic1(getHour + 12, "giờ");
+//             }
+//         }
+//     }
+// }
 
 

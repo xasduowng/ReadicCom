@@ -5,6 +5,7 @@
     font-size: 20px;
     background: var(--web);
     padding: 12px;
+    position: relative;
 }
 #comic-head > .col{
     background: transparent;
@@ -15,7 +16,7 @@
     width: 120px;
     height: 50px;
 }
-#comic-head .col  span{
+#comic-head .text_logo{
     font-size: 28px;
     text-shadow: 1px 2px 3px rgb(23, 66, 184);
     color: white;
@@ -23,20 +24,135 @@
 .comic-head_search{
     position: relative;
     margin-right: 50px;
+    font-size: 16px; 
+    font-weight:normal;
 }
 .comic-head_search input{
     width: 460px;
     background: rgb(254, 254, 255);
     border-radius: 5px;
     font-size: 16px;
-    border: 1px solid rgb(43, 62, 97);
-    
+    border: 1px solid rgb(43, 62, 97);   
 }
+.head_search-icon{
+    position: absolute;
+    top: 4px; right: 4px;
+    background: var(--web);
+    z-index: 4;
+    font-weight: 600;
+    font-size: 24px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+.head_search-icon p:nth-child(1){padding: 0px 10px}
+.head_search-icon p:nth-child(2){padding: 0 11px}
+.head_search-style{
+    position: absolute;
+    top: 115%; right: 0;
+    z-index: 6;
+    background: rgb(61, 61, 61);
+    padding: 12px;
+    border-radius: 5px;
+    width: 50%;
+    text-transform: none;
+    border: 1px solid #535353;
+}
+.head_search-style::after{
+    position: absolute;
+    top: -10px; right: 6px;
+    content: "";
+    border-bottom: 18px solid rgb(61, 61, 61);
+    border-right: 18px solid transparent;
+    border-left: 18px solid transparent;
+    z-index: 8;
+}
+.head_search-style p{
+    margin-bottom: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    color: #ddd4d4;
+    border-bottom: 1px solid rgb(92, 91, 91);
+    border-top: none; border-right: none;
+    padding-bottom: 4px;
+}
+.head_search-style p.choose,
+.head_search-style p:hover{
+    padding-left: 4px;
+    border-left: 4px solid rgb(61, 83, 207);
+    color: white;
+}
+.head_search-box{
+    position: absolute;
+    top: 110%; left: 0;
+    z-index: 6;
+    background:rgb(61, 61, 61);
+    padding: 12px;
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid #535353;
+}
+.search-box_title{
+    border-bottom: 1px solid #6b6969;
+    padding: 0px 12px 6px 12px;
+    margin-bottom: 12px;
+    font-weight: 600;
+    font-size: 18px;
+    text-transform:none;
+}
+.search-box_comic{
+    max-height: 400px; height: 100%;
+    overflow-y: scroll;
+}
+.sb_comic-item{ 
+    display: grid;
+    grid-template-columns: 1fr 4fr;
+    gap: 12px;
+    font-size: 16px;
+    font-weight: 400;
+    position: relative;
+    color: #f0eded;
+    border-bottom: 1px solid #3b3a3a;
+    padding: 12px 8px;
+    border-radius: 3px;
+}
+.sb_comic-item:hover{
+    background: rgb(51, 50, 50);
+}
+.sb_comic-item img{
+    width: 100px;
+    height: 120px;
+    object-fit: cover;
+    background: rgb(107, 106, 106);
+    border-radius: 3px;
+} 
+.sb_comic-item_wrap > p{
+    display: flex;
+    flex-wrap: wrap;
+    gap:  4px 5px;
+    font-size: 14px;
+}
+.sb_comic-item_wrap p:nth-child(1){
+    font-weight: 400;
+    text-indent: 12px;
+    font-size: 16px;
+}
+.sb_comic-item_wrap p:nth-child(2){
+    color: #ada9a9;
+    font-size: 14px;
+    font-style: italic; 
+    margin: 8px 0px 12px 0px;
+}
+.sb_comic-item_wrap p:nth-child(3){
+    position: absolute;
+    right: 12px; bottom: 4px;
+    font-size: 14px;
+}
+.search-icon{display: none};
 /* ----------------- */
 .list-nav {
     background: #23244b;
     position: relative;
-    z-index: 1;
+    z-index: 4;
 }
 .list-nav .col{
     display: flex;
@@ -53,7 +169,7 @@
     color: #faebeb;
     border-right: 1px solid rgba(65, 65, 65, 0.5);
     display: block;
-    z-index: 9;
+    z-index: 5;
 }
 .list-nav_btn > div:hover,
 .list-nav_btn > a:hover {
@@ -147,7 +263,7 @@
     flex-wrap: wrap;
     gap: 5px 8px;
 }
-.sc-item_genre p{
+.sc-item_genre a{
     padding: 4px 8px;
     border-radius: 8px;
     cursor: pointer;
@@ -155,9 +271,10 @@
     font-weight: 500;
     font-size: 13px;
     border: 1px solid #a3a1a1;
+    color: #dddada;
 }
-.sc-item_genre p.choose{
-    background: var(--web);
+.sc-item_genre a.choose{
+    background: rgb(43, 40, 71);
 }
 .sc-item_read{
     display: flex;
@@ -824,7 +941,7 @@ form input{
     top: 0; left: -600px; bottom: 0;
     max-width: 600px;
     background: rgb(71, 71, 71);
-    z-index: 5;
+    z-index: 10;
     padding: 20px;
     color: rgb(241, 239, 239);
     transition: 0.6s;

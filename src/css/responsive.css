@@ -16,11 +16,30 @@
     #comic-head .col{
         display: block;
     }
-    /* .comic-head_search{margin: 12px auto} */
-    .comic-head_search input{
-        max-width: 100%;
+    .comic-head_search{
+        margin: 12px auto;
         display: none;
     }
+    .comic-head_search input{
+        max-width: 100%;
+        /* display: none; */
+    }
+    .head_search-style{
+        width: 70%;
+    }
+    .search-box_comic{
+        height: 210px;
+    }
+    .search-icon{
+        position: absolute;
+        top: 18px;
+        right: 16px;
+        font-size: 34px;
+        color: #f7f6f6;
+        display: block;
+        text-shadow: 1px 2px 3px black;
+    }
+    /* ------------------------ */
     .list-nav{
         position: absolute;
         width: 100%;
