@@ -489,87 +489,58 @@ function handleBoxComic(arrComic, idFilter) {
                     let getPassMinute = +getPassTime.split(' ')[0].split(":")[1];
                     let getPassSecond = +getPassTime.split(' ')[0].split(":")[2];
                     let getPassOn = getPassTime.split(' ')[1];
+                       
                     function renderTimeComic() {
-                        // Time-----------------------------
-                        const getYear = getToYear - getPassYear;
-                        const getMonth = getToMonth - getPassMonth;
-                        const getDate = getToDate - getPassDate;
-                        const getHour = getToHour - getPassHour;
-                        const getMinute = getToMinute - getPassMinute;
-                        const getSecond = getToSecond - getPassSecond;
-                        function handleTimeComic() {
-                            if (getYear == 0) {
-                                if( getMonth == 0) {
-                                    if (getDate == 0) {
-                                        if (getHour == 0 && getPassOn == getToOn) {
-                                            if (getMinute == 0) {
-                                                renderTimeComic1(getSecond , "giây");
-                                            } else if(getMinute == 1 && getSecond < 0) {
-                                                renderTimeComic1(getSecond + 60, "giây");
-                                            } else{
-                                                renderTimeComic1(getMinute , "phút");
-                                            }
-                                        } else {
-                                            if (getPassOn == getToOn) {
-                                                renderTimeComic1(getHour, "giờ");
+                        const second = [60, 3600, 43200, 86400];
+                            const arrayHour = handleConvertSecond();
+                            if (getToYear - getPassYear == 0) {
+                                if (getToMonth - getPassMonth == 0) {
+                                    if (getToDate - getPassDate == 0) {
+                                        if (arrayHour[0] == 0 ) {
+                                            if (arrayHour[1] == 0) {
+                                                renderTimeComic(arrayHour[2], "giây");
                                             } else {
-                                                renderTimeComic1(getHour + 12, "giờ");
+                                                renderTimeComic(arrayHour[1], "phút");
                                             }
-                                        }
-                                    } else if (getDate <= 14 && getDate > 1){
-                                        renderTimeComic1(getDate, "ngày");
-                                    } else if (getDate == 1 && getHour < 0 ) {
-                                        if (getPassOn == getToOn) {
-                                            renderTimeComic1(getHour + 12, "giờ");
                                         } else {
-                                            renderTimeComic1(getHour + 24, "giờ");
+                                            arrayHour[1] <= 30? renderTimeComic(arrayHour[0] - 1 , "giờ") : renderTimeComic(arrayHour[0], "giờ")
                                         }
                                     } else {
-                                        renderTimeComic1(getDate, "ngày");
+                                        let getCurrentHour = arrayHour[0];
+                                        if (getToDate - getPassDate == 1) {
+                                            arrayHour[1] <= 30? renderTimeComic(getCurrentHour - 1 , "giờ") : renderTimeComic(getCurrentHour, "giờ")
+                                        } else {
+                                            let getCurentDate = getCurrentHour > 12 ? getToDate - getPassDate : getToDate - getPassDate - 1;
+                                            renderTimeComic(getCurentDate, "ngày");
+                                        } 
                                     }
-                                } else if (getMonth == 1 && getDate <0 ){
-                                    handleDay(getToMonth, getToYear);
                                 } else {
-                                    renderTimeComic2(getPassDate, getPassMonth, getPassYear);
-                                }
-                            } else {
-                                renderTimeComic2(getPassDate, getPassMonth, getPassYear);
-                            }
-                            // ----------------------------------------//
-                                function renderTimeComic1(num, text) {
-                                    chapUp[i].innerText = num +" " + text + " trước";
-                                };
-                                function renderTimeComic2(a, b, c) {
-                                    const numDate = a < 10 ? "0" + a: a;
-                                    const numMonth = b < 10 ? "0" + b : b;
-                                    chapUp[i].innerText = numDate + "/ " + numMonth + "/ " + c;
-                                };
-                                function handleDay(year, month) {
-                                    let day;
-                                    switch (month) {
-                                        case 4: ;case 6: ;case 9: ;case 11: ;
-                                            day = 30; insertDay(day)
-                                            break;
-                                        case 2 :
-                                            // nếu năm nhập vào là năm nhuận thì tháng 2 sẽ có 29 ngày
-                                            if (year% 4 == 0 ) {
-                                                day =  29; insertDay(day);
-                                                break;
-                                            }
-                                            //ngược lại nếu không phải năm nhuận thì tháng 2 sẽ có 28 ngày
-                                            else {
-                                                day =  28; insertDay(day);
-                                                break;
-                                            }
-                                        default: {
-                                            day = 31; insertDay(day);
-                                        }   
-                                    };
-                                    function insertDay(day) {
-                                        renderTimeComic1(getDate + day, "ngày")
-                                    }
-                                };
-                        } handleTimeComic();
+                                    if (getToMonth - getPassMonth == 1) {
+                                        let getCurentDate = arrayHour[0] > 12 ? getToDate - getPassDate : getToDate - getPassDate - 1;
+                                        if (getCurentDate + 30 > 15) { renderDateComic()
+                                        } else {renderTimeComic(getCurentDate + 30, "ngày")}
+                                    } else {renderDateComic()}
+                                } 
+                            } else {renderDateComic()}   
+                        function handleConvertSecond() {
+                            let timeToSecond = (getToOn == "AM") ? getToHour *second[1] + getToMinute*second[0] + getToSecond : getToHour *second[1] + getToMinute*second[0] + getToSecond + second[2];
+                            let timePassSecond = (getPassOn == "AM") ? getPassHour *second[1] + getPassMinute*second[0] + getPassSecond : getPassHour *second[1] + getPassMinute*second[0] + getPassSecond + second[2];
+                            let valueSecond = timeToSecond - timePassSecond;
+                            let currentHour = Math.floor(valueSecond / 3600);
+                            const x = (valueSecond / 3600).toString().includes(".");
+                            let currentMinute = (x == true)  ? (Math.floor(+("0." +((valueSecond / 3600).toString()).split('.')[1]) * 60)) : 0
+                            let currentSecond = (valueSecond % 60);
+                            return [currentHour, currentMinute, currentSecond];
+                        } ;
+                        function renderTimeComic(num, text) {
+                            chapUp[i].innerText = num +" " + text + " trước";
+                        };
+                        function renderDateComic() {
+                            let getComicDate = getPassDate < 10 ? "0" + getPassDate : getPassDate;
+                            let getComicMonth = getPassMonth< 10 ? "0" + getPassMonth: getPassMonth;
+                            let getComicYear = getPassYear;
+                            chapUp[i].innerText = (getComicDate + "/ " + getComicMonth + "/ " + getComicYear);
+                        }
                     } renderTimeComic();
                 }
             } renderDate();

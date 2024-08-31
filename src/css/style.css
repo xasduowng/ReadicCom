@@ -149,6 +149,9 @@
 }
 .search-icon{display: none};
 /* ----------------- */
+header .list-nav{
+    background: #23244b;
+}
 .list-nav {
     background: #23244b;
     position: relative;

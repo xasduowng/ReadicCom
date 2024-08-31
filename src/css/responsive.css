@@ -19,13 +19,22 @@
     .comic-head_search{
         margin: 12px auto;
         display: none;
+        position: absolute;
+        top: 86%; left: 0;
+        z-index: 5;
+        width: 100%;
+        padding: 8px;
     }
     .comic-head_search input{
         max-width: 100%;
-        /* display: none; */
+    }
+    .head_search-icon{
+        top: 12px; right: 12px;
     }
     .head_search-style{
         width: 70%;
+        top: 94%;
+        right: 8px;
     }
     .search-box_comic{
         height: 210px;
@@ -38,6 +47,10 @@
         color: #f7f6f6;
         display: block;
         text-shadow: 1px 2px 3px black;
+    }
+    .head_search-box{
+        position:unset;
+        margin-top: 12px;
     }
     /* ------------------------ */
     .list-nav{
@@ -129,7 +142,7 @@
     .be_col-handle span{border: 1px solid #575656;}
     /* --------------------------------------------------------- */
     #box-nav{
-        width: 96%;
+        width: 86%;
     }
     .box-nav_input{
         width: 100%;
