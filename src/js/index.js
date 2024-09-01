@@ -68,10 +68,6 @@ function handleBoxSearch() {
                 z('.head_search-style p.choose').classList.remove('choose');
                 ele.classList.add('choose');
                 inputSearch.placeholder = searchStyle[index].innerText + "...";
-                if (index == 2) {
-                    inputSearch.setAttribute("type", "number");
-                    inputSearch.setAttribute("min", 0);
-                } else inputSearch.setAttribute("type", "text");
                 handleEventSearch(index);
                 dataWeb.statusWeb.idSearch = index;
                 postApi('dataWeb', dataWeb);
@@ -81,10 +77,6 @@ function handleBoxSearch() {
                 z('.search-icon_close').style = "display: none";
             }
         });
-        if (getIdSearch == 2) {
-            inputSearch.setAttribute("type", "number");
-            inputSearch.setAttribute("min", 0);
-        }
     } handleEventStyle();
     function handleEventSearch(index) {
         inputSearch.oninput = () => {
