@@ -72,8 +72,7 @@ function handleBoxSearch() {
                     inputSearch.setAttribute("type", "number");
                     inputSearch.setAttribute("min", 0);
                 } else inputSearch.setAttribute("type", "text");
-               
-                handleEventSearch(index) 
+                handleEventSearch(index);
                 dataWeb.statusWeb.idSearch = index;
                 postApi('dataWeb', dataWeb);
                 // ----------------//
@@ -105,7 +104,6 @@ function handleBoxSearch() {
                 let newArrComic = arrComic.filter((item) => {
                     return +item.nameChap >= inputSearch.value;
                 });
-                console.log(newArrComic);
                 renderComicSearch(newArrComic, getValue);
             } else {
                 let newArrComic = arrComic.filter((item) => {
@@ -464,9 +462,9 @@ function handleBoxComic(arrComic, idFilter) {
                     item.id = arrComic[index].nameComic;
                 })
             } renderNameLink();
+            const chapUp = zz('.cin-chap_update');
             function renderDate() {
                 // ['8/6/2024', '3:33:59 PM']
-                const chapUp = zz('.cin-chap_update');
                 // Current time---------------------
                 const getToDay = today.split(", ")[0];
                 const getToTime = today.split(', ')[1];
@@ -489,7 +487,8 @@ function handleBoxComic(arrComic, idFilter) {
                     let getPassMinute = +getPassTime.split(' ')[0].split(":")[1];
                     let getPassSecond = +getPassTime.split(' ')[0].split(":")[2];
                     let getPassOn = getPassTime.split(' ')[1];
-                       
+                    // 9/1/2024, 8:27:40 AM
+                    // 8/31/2024, 11:16:55 PM
                     function renderTimeComic() {
                         const second = [60, 3600, 43200, 86400];
                             const arrayHour = handleConvertSecond();
@@ -498,27 +497,28 @@ function handleBoxComic(arrComic, idFilter) {
                                     if (getToDate - getPassDate == 0) {
                                         if (arrayHour[0] == 0 ) {
                                             if (arrayHour[1] == 0) {
-                                                renderTimeComic(arrayHour[2], "giây");
+                                                if (arrayHour[2] == 0) {
+                                                    renderTimeComic(2, "giây");
+                                                } else renderTimeComic(arrayHour[2], "giây");
                                             } else {
                                                 renderTimeComic(arrayHour[1], "phút");
                                             }
                                         } else {
-                                            arrayHour[1] <= 30? renderTimeComic(arrayHour[0] - 1 , "giờ") : renderTimeComic(arrayHour[0], "giờ")
+                                            arrayHour[1] <= 30? renderTimeComic(arrayHour[0] , "giờ") : renderTimeComic(arrayHour[0] + 1, "giờ")
                                         }
                                     } else {
                                         let getCurrentHour = arrayHour[0];
-                                        if (getToDate - getPassDate == 1) {
-                                            arrayHour[1] <= 30? renderTimeComic(getCurrentHour - 1 , "giờ") : renderTimeComic(getCurrentHour, "giờ")
+                                        let valueSecond = arrayHour[3];
+                                        if (valueSecond < 0) {
+                                            arrayHour[1] <= 30? renderTimeComic(getCurrentHour - 1 + 24, "giờ") : renderTimeComic(getCurrentHour + 24, "giờ")
                                         } else {
-                                            let getCurentDate = getCurrentHour > 12 ? getToDate - getPassDate : getToDate - getPassDate - 1;
+                                            let getCurentDate = getCurrentHour > 12 ? getToDate - getPassDate + 1 : getToDate - getPassDate;
                                             renderTimeComic(getCurentDate, "ngày");
-                                        } 
+                                        }
                                     }
                                 } else {
                                     if (getToMonth - getPassMonth == 1) {
-                                        let getCurentDate = arrayHour[0] > 12 ? getToDate - getPassDate : getToDate - getPassDate - 1;
-                                        if (getCurentDate + 30 > 15) { renderDateComic()
-                                        } else {renderTimeComic(getCurentDate + 30, "ngày")}
+                                        handleDay(getPassYear, getPassMonth);
                                     } else {renderDateComic()}
                                 } 
                             } else {renderDateComic()}   
@@ -530,10 +530,38 @@ function handleBoxComic(arrComic, idFilter) {
                             const x = (valueSecond / 3600).toString().includes(".");
                             let currentMinute = (x == true)  ? (Math.floor(+("0." +((valueSecond / 3600).toString()).split('.')[1]) * 60)) : 0
                             let currentSecond = (valueSecond % 60);
-                            return [currentHour, currentMinute, currentSecond];
+                            return [currentHour, currentMinute, currentSecond, valueSecond];
                         } ;
+                        function handleDay(year, month) {
+                            let day;
+                            switch (month) {
+                                case 4: ; case 6:; case 9:; case 11:;
+                                    day = 10; insertDay(day)
+                                    break;
+                                case 2 : 
+                                    if (year%4 == 0) {
+                                        day = 29; insertDay(day);
+                                        break;
+                                    } else {
+                                        day = 28; insertDay(day);
+                                        break;
+                                    }
+                                default: {
+                                    day = 31; insertDay(day);
+                                }
+                            };
+                            function insertDay(day) {
+                                let getCurentDate = arrayHour[0] > 12 ? getToDate - getPassDate + day + 1 : getToDate - getPassDate + day;
+                                if (getCurentDate == 0 ) {
+                                    arrayHour[1] <= 30? renderTimeComic(arrayHour[0] , "giờ") : renderTimeComic(arrayHour[0] + 1, "giờ")
+                                } else renderTimeComic(getCurentDate, "ngày")
+                            }
+                        }
                         function renderTimeComic(num, text) {
                             chapUp[i].innerText = num +" " + text + " trước";
+                            if (num < 0) {
+                                console.log(num +" " + text + " trước" )
+                            }
                         };
                         function renderDateComic() {
                             let getComicDate = getPassDate < 10 ? "0" + getPassDate : getPassDate;
@@ -818,127 +846,9 @@ function handlePostApi() {
     }
 } handlePostApi();
 /* -------------------------------------------------------------------*/
-function handleBoxNav() {
-    const getIdFilter = getApi("dataWeb").statusWeb.idFilter;
-    const getIdRandom = getApi("dataWeb").statusWeb.idRandom;
-    const getIdRespon = getApi("dataWeb").statusWeb.idRespon;
-    const getArrGenre = getApi("dataWeb").arrayGenre;
-    const input = z('.box-nav_input');
-    const boxNavTitle = z('.box-nav_title');
-    // arrComic, arrWebsite, 
-    const boxItem = z('.box-nav_item');
-    if      (getIdFilter == 0) {renderFilterChap()}
-    else if (getIdFilter == 1) {renderFilterAlpha()}
-    else if (getIdFilter == 2) {renderListGenre()}
-    else                       {renderListWeb()};
-        // Danh sach the loai truyen---
-        function renderListGenre() {
-            // const getGenre = getArrGenre[getIdRandom].nameGenre;
-            boxItem.innerHTML = getArrGenre.map(renderList).join("");
-                getIdRespon == 1 ? (
-                    boxItem.style = "grid-template-columns: repeat(2, 1fr)"
-                ) : boxItem.style = "grid-template-columns: repeat(4, 1fr)"
-            boxNavTitle.innerText = "Danh sách thể loại truyện!";
-            input.setAttribute("placeholder", "Nhập thể loại bạn muốn tìm...")
-            function renderList(item) {
-                const {nameGenre} = item;
-                return (`
-                    <a class="btn">${nameGenre}</a>
-                `)
-            };
-            function handleSearch() {
-                input.oninput = () => {
-                    const getValue = input.value.toLowerCase();
-                    let getNewGenre = getArrGenre.filter((item) => {
-                        return item.nameGenre.toLowerCase().includes(getValue);
-                    })
-                    boxItem.innerHTML = getNewGenre.map(renderList).join("");
-                    renderExtraInfor(getNewGenre, 0);
-                }
-            } handleSearch();
-            // Them thong tin 
-            function renderExtraInfor(arrayGenre, idGenre) {
-                for(let i = 0; i < arrayGenre.length; i++) {
-                    zz('.box-nav_item a')[i].href = "#" + arrayGenre[i].nameGenre;
-                };
-                arrayGenre.length >=1 ? (
-                    zz('.box-nav_item a')[idGenre].classList.add('choose')
-                ) : console.log("Không tìm thấy thể loại bạn nhập!");
-                zz('.box-nav_item a').forEach((ele) => {
-                    ele.onclick = () => {
-                        z('.box-nav_item a.choose').classList.remove('choose');
-                        ele.classList.add('choose');
-                    }
-                })
-            } renderExtraInfor(getArrGenre, getIdRandom);
-        };
-        // Danh sach website-----------
-        function renderListWeb() {
-            let arrayWeb = [];
-                getIdRespon == 1 ? (
-                    boxItem.style = "grid-template-columns: repeat(2, 1fr)"
-                ) : boxItem.style = "grid-template-columns: repeat(3, 1fr)"
-                boxNavTitle.innerText = "Danh sách Website truyện!";
-                input.setAttribute("placeholder", "Nhập website bạn muốn tìm...");
-            // Tim ra danh sach website-------
-            for (let i = 0; i < arrWebsite.length; i++) {
-                const getNameWeb = arrWebsite[i].nameWeb.toLowerCase();
-                const newArrComic = arrComic.filter((item) => {
-                    return item.nameHref.toLowerCase().includes(xoa_dau(getNameWeb));
-                }).sort((a,b) => b.nameChap - a.nameChap);
-                if (newArrComic.length >= 1) {
-                    let x = {nameWeb: getNameWeb};
-                    arrayWeb.push(x);
-                }
-            };
-            boxItem.innerHTML = arrayWeb.map(renderListWeb).join("");
-            function renderListWeb(item) {
-                const {nameWeb} = item;
-                return (`
-                    <a class="btn">${nameWeb}</a>
-                `)
-            }
-            function renderExtraInfor(array, index) {
-                for(let i = 0; i < array.length; i++) {
-                    zz('.box-nav_item a')[i].href = "#" + array[i].nameWeb;
-                };
-                array.length >=1 ? (
-                    zz('.box-nav_item a')[index].classList.add('choose')
-                ) : console.log("Không thể tìm thấy website bạn nhập")
-                zz('.box-nav_item a').forEach((ele) => {
-                    ele.onclick = () => {
-                        z('.box-nav_item a.choose').classList.remove('choose');
-                        ele.classList.add('choose')
-                    }
-                });
-            } renderExtraInfor(arrayWeb, 0);
-            function handleSearch() {
-                input.oninput = () => {
-                    const getValue = input.value.toLowerCase();
-                    let getNewWeb = arrayWeb.filter((item) => {
-                        return item.nameWeb.toLowerCase().includes(getValue);
-                    })
-                    boxItem.innerHTML = getNewWeb.map(renderListWeb).join("");
-                    renderExtraInfor(getNewWeb, 0);
-                }
-            } handleSearch();
-        };
-        // Danh sach truyen theo alpha-
-        function renderFilterAlpha() {
-            // const a = "Nguyễn Văn Hoàng";
-            // for (var x of a) {
-            //     console.log(x);
-            // }
-        }
-        // Danh sach cac chuong-------
-        function renderFilterChap() {
-        }
-} handleBoxNav();
-/* -------------------------------------------------------------------*/
     // Ham dung de an hien phan tu---------------------
 function handleDisplayElement() {
     const navIcons = zz('#web-fixed i');
-    const btnClose = z('.box-nav_close');
     const genreBtn = z('.genre-web');
     const numNav = navIcons.length;
     let getIdRespon = getApi("dataWeb").statusWeb.idRespon;
@@ -946,8 +856,6 @@ function handleDisplayElement() {
         navIcons[0].onclick = () => {showIcon()};
         navIcons[1].onclick = () => {hideIcon()};
         navIcons[2].onclick = () => {hideIcon()};
-        navIcons[3].onclick = () => {hideIcon()};
-        navIcons[4].onclick = () => {showBoxNav()};
     } toggleNavIcon();
         function showIcon() {
             navIcons[0].classList.add('close');
@@ -963,15 +871,6 @@ function handleDisplayElement() {
             for (let i = 2; i < numNav; i++) {
                 navIcons[i].classList.add('close');
             }
-        }
-        function showBoxNav() {
-            boxNav.style = "left: 0px";
-            overLay.classList.remove('close');
-            hideIcon();
-        };
-        function hideBoxNav() {
-            boxNav.style = "left: -600px";
-            overLay.classList.add('close');
         }
     // Cac chuc nang khi responsive---------------------------
     size < 479 ? handleNavWeb() : (
@@ -994,11 +893,10 @@ function handleDisplayElement() {
     genreBtn.onclick = () => {
         dataWeb.statusWeb.idFilter = 2;
         postApi("dataWeb", dataWeb);
-        showBoxNav();  handleBoxNav();
     };
     // Su kien khi ban click vao lop phu----------------------
     overLay.onclick = () => {
-        hideBoxNav(); hideIcon();
+        hideIcon();
         overLay.classList.add('close');
         z('.box-extra').classList.add('close');
         getIdRespon == 1 ? (z('.list-nav').style="display: none") : console.log("Unknown");
@@ -1009,8 +907,5 @@ function handleDisplayElement() {
         z('.box-extra').classList.add('close');
         overLay.classList.add('close');
     }
-    // Nut dong trong box nav----------------------------------
-    btnClose.onclick = () => {hideBoxNav()};
-    
 } handleDisplayElement();
 /* -------------------------------------------------------------------*/

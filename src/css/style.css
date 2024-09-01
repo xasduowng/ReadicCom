@@ -1029,15 +1029,9 @@ form input{
     font-size: 34px;
 }
 .web-fixed_icon .fa-globe{
-    right: 72px;
-    bottom: 102px;
+    right: 92px;
+    bottom: 82px;
     font-size: 28px;
     color: green;
-}
-.web-fixed_icon .fa-list{
-    right: 100px;
-    bottom: 60px;
-    color:tomato;
-    font-size: 28px;
 }
 /* ------------------------------- */
