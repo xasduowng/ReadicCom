@@ -1,4 +1,4 @@
-import {getApi, postApi, xoa_dau, handleChapHref} from "./function.js";
+import {getApi, postApi, xoa_dau, handleChapHref, renderDate} from "./function.js";
 //-------------------------------
 const z = document.querySelector.bind(document);
 const zz = document.querySelectorAll.bind(document);
@@ -10,10 +10,11 @@ const zz = document.querySelectorAll.bind(document);
         "arrayComic":[],
         "arrayWebsite": [],
         "arrayGenre": [],
+        "arrayHistory": [],
         "statusWeb": {
             chapterHref: "none",
             idFilter: 0,
-            idRandom: "none",
+            idComic: "none",
             idRespon: 1,
             idSearch: 0
         }
@@ -28,18 +29,14 @@ const zz = document.querySelectorAll.bind(document);
 /* ----------------------------------XU LY CAC SU KIEN CUA NGUOI DUNG KHI TAC DONG ---------------------------------- */
 const overLay = z('#overlay');
 const boxExtra = z('.box-extra');
-const size = screen.width; 
-const boxNav = z('#box-nav');
-/* -------------------------------------------------------------------*/
-const dataWeb = getApi ("dataWeb");
+const size = screen.width; const dataWeb = getApi ("dataWeb");
 const idFilter = (dataWeb.statusWeb).idFilter;
 const arrWebsite = dataWeb.arrayWebsite;
 handleBoxWebsite(arrWebsite);
 const arrComic = dataWeb.arrayComic;
     arrComic.length >= 1 ? (handleBoxComic(arrComic, idFilter), handleBoxGenre())
         : console.log("Chưa có dữ liệu!");
-/* -------------------------------------------------------------------*/
-    // Ham xu ly o tim kiem------------------------
+// Ham xu ly o tim kiem---------------------------------------------//
 function handleBoxSearch() {
     const getIdSearch = getApi ("dataWeb").statusWeb.idSearch;
     const searchStyle = zz('.head_search-style p');
@@ -82,6 +79,7 @@ function handleBoxSearch() {
         inputSearch.oninput = () => {
             let getValue = xoa_dau(inputSearch.value);
             headSearchBox.classList.remove("close");
+            z('.head_search-clear').classList.remove('close');
             if (index == 0) {
                 let newArrComic = arrComic.filter((item) => {
                     return xoa_dau(item.nameComic.toLowerCase()).includes(getValue);
@@ -111,7 +109,7 @@ function handleBoxSearch() {
                 boxComicSearch.innerHTML = newArr.map((item) => {
                     const {nameComic, listGenre, nameChap, imgHref, nameCharacter} = item;
                     return (`
-                        <a href="" target="_blank" class="sb_comic-item">
+                        <a href="" class="sb_comic-item">
                             <img src=${imgHref} alt="">
                             <div class="sb_comic-item_wrap">
                                 <p>${nameComic}</p>
@@ -123,17 +121,24 @@ function handleBoxSearch() {
                     `)
                 }).join("")
                 for (let i = 0; i < newArr.length; i++) {
-                    zz('.search-box_comic a')[i].href = newArr[i].nameHref;
+                    zz('.search-box_comic a')[i].href = "#" + newArr[i].nameComic;
                 }
             } else {
                 searchTitle.innerText = "Không tìm thấy truyện!! Vui lòng nhập từ khóa khác."
             };
-            if (getValue.length == 0) {headSearchBox.classList.add("close");}
+            z('.head_search-clear').onclick = () => {
+                inputSearch.value = "";
+                headSearchBox.classList.add("close");
+                z('.head_search-clear').classList.add('close');
+            }
+            if (getValue.length == 0) {
+                headSearchBox.classList.add("close");
+                z('.head_search-clear').classList.add('close');
+            }
         } 
     } handleEventSearch(getIdSearch);
 } handleBoxSearch();
-/* -------------------------------------------------------------------*/
-    // Ham xu ly hop the loai----------------------
+// Ham xu ly hop the loai--------------------------------------------//
 function handleBoxGenre() {
     function handleArrGenre() {
         const arrGenre = [];
@@ -158,13 +163,9 @@ function handleBoxGenre() {
     }; 
     const arrGenre = handleArrGenre();
     // Tra ve mot truyen truyen ngau nhien--------------------------------  
-    const genreTitle = z('.comic_genre-title span');
     let rd1 = Math.floor(Math.random()*arrGenre.length);
         dataWeb.arrayGenre = arrGenre;
-        dataWeb.statusWeb.idRandom = rd1;
-        postApi("dataWeb", dataWeb);
     let genre = arrGenre[rd1].nameGenre.toLowerCase();
-    genreTitle.innerText = genre;
     let newArr = arrComic.filter((item) => item.listGenre.toLowerCase().includes(genre))
     let rd2 = Math.floor((Math.random() * newArr.length));
         function handleComicRandom() {
@@ -270,33 +271,8 @@ function handleBoxGenre() {
                 } renderValue();
             } renderRandom(rd2);
         } handleComicRandom();
-    //  ---------------------------------------  //
-    function renderComicGenre(newArr) {
-        const genreBox = z('.comic_genre-box');
-        genreBox.innerHTML = newArr.map((item) => {
-            let {nameComic, chapterHref, nameChap, imgHref, nameHref} = item;
-            return (`
-                <div class="genre-box_item">
-                    <a>
-                        <img src=${imgHref} alt="">
-                    </a>
-                    <div>
-                        <a href=${nameHref} class="genre-box_name name" target="_blank">${nameComic}</a>
-                        <a href=${chapterHref} class="genre-box_chap" target="_blank">Chương ${nameChap}</a>
-                    </div>
-                </div>
-            `)
-        }).join('');
-        function insertIdComic() {
-            const nameLinks = zz('.genre-box_item > a');
-            nameLinks.forEach((link, index) => {
-                link.href = "#" + newArr[index].nameComic;
-            })
-        } insertIdComic();
-    } renderComicGenre(newArr);
 }
-/* -------------------------------------------------------------------*/
-    // Ham xu ly tra ve danh sach truyen-----------
+// Ham xu ly tra ve danh sach truyen--------------------------------//
 function handleBoxComic(arrComic, idFilter) {
     const boxComic = z('.box-comic');
     var today = new Date().toLocaleString("en-US", {timeZone: "Asia/Jakarta"});
@@ -322,16 +298,10 @@ function handleBoxComic(arrComic, idFilter) {
             // ----------------------------------
             z('.box-comic_nav span.choose').classList.remove('choose');
             comicNavs[index].classList.add('choose');
-            handleArrComic(index); handleBoxNav();
-                $('.box-comic_nav span.sld').click(function() {
-                    $('.box-comic_genre').slideDown();
-                })
+            handleArrComic(index);;
         }
     }); 
-    if (idFilter == 2) {$('.box-comic_genre').slideUp();}
-    $('.comic_nav-genre').click(function() {
-        $('.box-comic_genre').slideUp(1000);
-    })
+   
     function handleArrComic(index) {
         if (index == 0) {
             // Sắp xếp theo số chương
@@ -341,7 +311,7 @@ function handleBoxComic(arrComic, idFilter) {
             Object.assign((boxComic).style, {
                 display: "grid"
             })
-            handleRenderComic(arrComic); handleBoxExtra();
+            handleRenderComic(arrComic); handleBoxExtra(); handleComicHistory();
         } else if (index == 1) {
             // Sắp xếp theo alpha
             arrComic.sort((a,b) => {
@@ -360,7 +330,7 @@ function handleBoxComic(arrComic, idFilter) {
             Object.assign((boxComic).style, {
                 display: "grid"
             })
-            handleRenderComic(arrComic); handleBoxExtra()
+            handleRenderComic(arrComic); handleBoxExtra(); handleComicHistory();
         } else if (index == 2) {
            // Sap xep truyện theo the loai
             boxComic.innerHTML = "";
@@ -390,7 +360,7 @@ function handleBoxComic(arrComic, idFilter) {
                 boxComic.appendChild(div);
             }
                 // Them danh sach ten theo the loai
-            handleBoxExtra();
+            handleBoxExtra(); handleComicHistory();
         } else if (index == 3) {
             // Trả về danh sách các website
             boxComic.innerHTML = "";
@@ -418,7 +388,7 @@ function handleBoxComic(arrComic, idFilter) {
                     boxComic.appendChild(div);
                 }
             };
-            handleBoxExtra();
+            handleBoxExtra(); handleComicHistory();
         };
         function handleRenderComic(arrComic) {
             boxComic.innerHTML = arrComic.map(renderComicGenre).join("");
@@ -454,116 +424,9 @@ function handleBoxComic(arrComic, idFilter) {
                     item.id = arrComic[index].nameComic;
                 })
             } renderNameLink();
+            // Them gia tri cap nhat truyen-------------------------
             const chapUp = zz('.cin-chap_update');
-            function renderDate() {
-                // ['8/6/2024', '3:33:59 PM']
-                // Current time---------------------
-                const getToDay = today.split(", ")[0];
-                const getToTime = today.split(', ')[1];
-                let getToMonth = +getToDay.split('/')[0];
-                let getToDate = +getToDay.split('/')[1];
-                let getToYear = +getToDay.split('/')[2];
-                let getToHour = +getToTime.split(' ')[0].split(":")[0];
-                let getToMinute = +getToTime.split(' ')[0].split(":")[1];
-                let getToSecond = +getToTime.split(' ')[0].split(":")[2];
-                let getToOn = getToTime.split(' ')[1];
-                for (let i = 0; i < arrComic.length; i++) {
-                    // Comic time--------------------------
-                    const passDay = arrComic[i].updateChap;
-                    const getPassDay = passDay.split(", ")[0];
-                    const getPassTime = passDay.split(', ')[1];
-                    let getPassMonth = +getPassDay.split('/')[0];
-                    let getPassDate = +getPassDay.split('/')[1];
-                    let getPassYear = +getPassDay.split('/')[2];
-                    let getPassHour = +getPassTime.split(' ')[0].split(":")[0];
-                    let getPassMinute = +getPassTime.split(' ')[0].split(":")[1];
-                    let getPassSecond = +getPassTime.split(' ')[0].split(":")[2];
-                    let getPassOn = getPassTime.split(' ')[1];
-                    // 9/1/2024, 8:27:40 AM
-                    // 8/31/2024, 11:16:55 PM
-                    function renderTimeComic() {
-                        const second = [60, 3600, 43200, 86400];
-                            const arrayHour = handleConvertSecond();
-                            if (getToYear - getPassYear == 0) {
-                                if (getToMonth - getPassMonth == 0) {
-                                    if (getToDate - getPassDate == 0) {
-                                        if (arrayHour[0] == 0 ) {
-                                            if (arrayHour[1] == 0) {
-                                                if (arrayHour[2] == 0) {
-                                                    renderTimeComic(2, "giây");
-                                                } else renderTimeComic(arrayHour[2], "giây");
-                                            } else {
-                                                renderTimeComic(arrayHour[1], "phút");
-                                            }
-                                        } else {
-                                            arrayHour[1] <= 30? renderTimeComic(arrayHour[0] , "giờ") : renderTimeComic(arrayHour[0] + 1, "giờ")
-                                        }
-                                    } else {
-                                        let getCurrentHour = arrayHour[0];
-                                        let valueSecond = arrayHour[3];
-                                        if (valueSecond < 0) {
-                                            arrayHour[1] <= 30? renderTimeComic(getCurrentHour - 1 + 24, "giờ") : renderTimeComic(getCurrentHour + 24, "giờ")
-                                        } else {
-                                            let getCurentDate = getCurrentHour > 12 ? getToDate - getPassDate + 1 : getToDate - getPassDate;
-                                            renderTimeComic(getCurentDate, "ngày");
-                                        }
-                                    }
-                                } else {
-                                    if (getToMonth - getPassMonth == 1) {
-                                        handleDay(getPassYear, getPassMonth);
-                                    } else {renderDateComic()}
-                                } 
-                            } else {renderDateComic()}   
-                        function handleConvertSecond() {
-                            let timeToSecond = (getToOn == "AM") ? getToHour *second[1] + getToMinute*second[0] + getToSecond : getToHour *second[1] + getToMinute*second[0] + getToSecond + second[2];
-                            let timePassSecond = (getPassOn == "AM") ? getPassHour *second[1] + getPassMinute*second[0] + getPassSecond : getPassHour *second[1] + getPassMinute*second[0] + getPassSecond + second[2];
-                            let valueSecond = timeToSecond - timePassSecond;
-                            let currentHour = Math.floor(valueSecond / 3600);
-                            const x = (valueSecond / 3600).toString().includes(".");
-                            let currentMinute = (x == true)  ? (Math.floor(+("0." +((valueSecond / 3600).toString()).split('.')[1]) * 60)) : 0
-                            let currentSecond = (valueSecond % 60);
-                            return [currentHour, currentMinute, currentSecond, valueSecond];
-                        } ;
-                        function handleDay(year, month) {
-                            let day;
-                            switch (month) {
-                                case 4: ; case 6:; case 9:; case 11:;
-                                    day = 10; insertDay(day)
-                                    break;
-                                case 2 : 
-                                    if (year%4 == 0) {
-                                        day = 29; insertDay(day);
-                                        break;
-                                    } else {
-                                        day = 28; insertDay(day);
-                                        break;
-                                    }
-                                default: {
-                                    day = 31; insertDay(day);
-                                }
-                            };
-                            function insertDay(day) {
-                                let getCurentDate = arrayHour[0] > 12 ? getToDate - getPassDate + day + 1 : getToDate - getPassDate + day;
-                                if (getCurentDate == 0 ) {
-                                    arrayHour[1] <= 30? renderTimeComic(arrayHour[0] , "giờ") : renderTimeComic(arrayHour[0] + 1, "giờ")
-                                } else renderTimeComic(getCurentDate, "ngày")
-                            }
-                        }
-                        function renderTimeComic(num, text) {
-                            chapUp[i].innerText = num +" " + text + " trước";
-                            if (num < 0) {
-                                console.log(num +" " + text + " trước" )
-                            }
-                        };
-                        function renderDateComic() {
-                            let getComicDate = getPassDate < 10 ? "0" + getPassDate : getPassDate;
-                            let getComicMonth = getPassMonth< 10 ? "0" + getPassMonth: getPassMonth;
-                            let getComicYear = getPassYear;
-                            chapUp[i].innerText = (getComicDate + "/ " + getComicMonth + "/ " + getComicYear);
-                        }
-                    } renderTimeComic();
-                }
-            } renderDate();
+            renderDate(chapUp, arrComic, today);
             function renderAnotherWeb() {
                 const comicWeb = zz('.comic-i_web');
                 for (let i = 0; i <arrComic.length; i++) {
@@ -581,10 +444,68 @@ function handleBoxComic(arrComic, idFilter) {
                 }
             } renderAnotherWeb();
         };
-    } handleArrComic(idFilter)
+    } handleArrComic(idFilter);
 };
-/* -------------------------------------------------------------------*/
-    // Ham xu ly cac website-----------------------
+//  Ham xu ly tra ve danh sach truyen--------------------------------//
+function handleComicHistory() {
+    const arrHistory = dataWeb.arrayHistory;
+    const imgComic = zz('.ci_infor-img');
+    const nameComic = zz('.ci_name-comic');
+    const chapComic = zz('.cin-chap_name');
+    function handleEventClick(items) {
+        items.forEach((ele, index) => {
+            ele.onclick = () => {
+                const getNameComic = (zz('.ci_name-comic')[index].innerText).toLowerCase();
+                const currentComic = arrComic.filter((item) => {
+                    return item.nameComic.toLowerCase().includes(getNameComic);
+                });
+                arrHistory.push(currentComic[0]);
+                handleReduceArr(arrHistory);
+            }
+        });
+    } 
+    handleEventClick(imgComic); handleEventClick(nameComic); handleEventClick(chapComic); 
+    function handleReduceArr(arrHistory) {
+        let length = arrHistory.length;
+        if (length >=7) {
+            let array = [];
+            for(let i = length-1; i > length -7; i-- ) {
+                array.push(arrHistory[i]);
+            }
+            renderComicGenre(array);
+            dataWeb.arrayHistory = array;
+            postApi("dataWeb", dataWeb);
+        } else {
+            renderComicGenre(arrHistory);
+            dataWeb.arrayHistory = arrHistory;
+            postApi("dataWeb", dataWeb);
+        } 
+    } handleReduceArr(arrHistory);
+    function renderComicGenre(newArr) {
+        const genreBox = z('.comic_genre-box');
+        genreBox.innerHTML = newArr.map((item) => {
+            let {nameComic, chapterHref, nameChap, imgHref, nameHref} = item;
+            return (`
+                <div class="genre-box_item">
+                    <a>
+                        <img src=${imgHref} alt="">
+                    </a>
+                    <div>
+                        <a href=${nameHref} class="genre-box_name name" target="_blank">${nameComic}</a>
+                        <a href=${chapterHref} class="genre-box_chap" target="_blank">Chương ${nameChap}</a>
+                    </div>
+                </div>
+            `)
+        }).join('');
+        function insertIdComic() {
+            const nameLinks = zz('.genre-box_item > a');
+            nameLinks.forEach((link, index) => {
+                link.href = "#" + newArr[index].nameComic;
+            })
+        } insertIdComic();
+    };
+} ;
+// Ham xu ly cac website--------------------------------------------//
 function handleBoxWebsite(arrWebsite) {
     const inputs = zz('.box-web_input input');
     const btnWeb = z('.btn-web');
@@ -678,8 +599,7 @@ function handleBoxWebsite(arrWebsite) {
         inputs[2].value = JSON.stringify(arrWebsite);
     } ;
 };
-/* -------------------------------------------------------------------*/
-    // Ham xu ly hop noi dung truyen---------------
+// Ham xu ly hop noi dung truyen------------------------------------//
 function handleBoxExtra() {
     const extraBtns = zz('.extra-btn');
     const editBtns = zz('.comic-i_edit');
@@ -806,8 +726,7 @@ function handleBoxExtra() {
         return x;
     };   
 } handleBoxExtra();
-/* -------------------------------------------------------------------*/
-    // Bat tat den---------------------------------
+// Bat tat den------------------------------------------------------//
 function ligthToggle() {
     const statusBtn = zz('.ci_infor-status');
     setInterval(()=> {
@@ -816,8 +735,7 @@ function ligthToggle() {
         }
     }, 500)
 } ligthToggle();
-/* -------------------------------------------------------------------*/
-    // Ham xu ly nguoi dung them mang truyen-------
+// Ham xu ly nguoi dung them mang truyen----------------------------//
 function handlePostApi() {
     const inputs = zz('.box-inf label input');
     const listComic = JSON.stringify(arrComic);
@@ -837,8 +755,7 @@ function handlePostApi() {
         }
     }
 } handlePostApi();
-/* -------------------------------------------------------------------*/
-    // Ham dung de an hien phan tu---------------------
+// Ham dung de an hien phan tu--------------------------------------//
 function handleDisplayElement() {
     const navIcons = zz('#web-fixed i');
     const genreBtn = z('.genre-web');
@@ -870,16 +787,14 @@ function handleDisplayElement() {
         postApi("dataWeb", dataWeb) // ("Tablet or Laptop")
     );
     function handleNavWeb() {
-        dataWeb.statusWeb.idRespon = 1;
-        postApi("dataWeb", dataWeb);
-        if (getIdRespon == 1) {
-            $(".comic-head_logo").click(function() {
-                $(".list-nav").slideToggle();
-            });
-            $(".search-icon").click(function() {
-                $(".comic-head_search").slideToggle();
-            }) 
-        } 
+        $(".comic-head_logo").click(function() {
+            $(".list-nav").slideToggle();
+            $(".comic-head_search").slideUp();
+        });
+        $(".search-icon").click(function() {
+            $(".comic-head_search").slideToggle();
+            $(".list-nav").slideUp();
+        }) 
     } ;
     // Nut the loai tren nav----------------------------------
     genreBtn.onclick = () => {
@@ -900,4 +815,3 @@ function handleDisplayElement() {
         overLay.classList.add('close');
     }
 } handleDisplayElement();
-/* -------------------------------------------------------------------*/

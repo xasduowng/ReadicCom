@@ -21,15 +21,21 @@
         display: none;
         position: absolute;
         top: 86%; left: 0;
-        z-index: 5;
+        z-index: 6;
         width: 100%;
         padding: 8px;
     }
     .comic-head_search input{
         max-width: 100%;
+        padding-right: 84px;
+    }
+    .head-search_clear{
+        top: 15px;
+        right: 60px;
     }
     .head_search-icon{
-        top: 12px; right: 12px;
+        top: 11px;
+        right: 13px;
     }
     .head_search-style{
         width: 70%;
@@ -55,7 +61,7 @@
     /* ------------------------ */
     .list-nav{
         position: absolute;
-        width: 100%;
+        width: 98.8%;
         z-index: 5;
         border: 1px solid rgb(48, 47, 47);
         border-radius: 18px;

@@ -33,22 +33,34 @@
     border-radius: 5px;
     font-size: 16px;
     border: 1px solid rgb(43, 62, 97);   
+    padding-right: 42px;
+}
+.head_search-clear{
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    color: gray;
+    font-size: 26px;
+    border-left: 1px solid rgb(228, 223, 223);
+    padding-left: 10px;
 }
 .head_search-icon{
     position: absolute;
-    top: 4px; right: 4px;
-    background: var(--web);
+    top: 4px;
+    right: -48px;
+    background: #0a0c69;
     z-index: 4;
     font-weight: 600;
     font-size: 24px;
     border-radius: 3px;
     cursor: pointer;
+    border: 1px solid #cdc7c7;
 }
 .head_search-icon p:nth-child(1){padding: 0px 10px}
 .head_search-icon p:nth-child(2){padding: 0 11px}
 .head_search-style{
     position: absolute;
-    top: 115%; right: 0;
+    top: 115%; right: -51px;
     z-index: 6;
     background: rgb(61, 61, 61);
     padding: 12px;
@@ -457,11 +469,6 @@ header .list-nav{
     display: flex;
     flex-wrap: wrap;
     gap: 12px 8px;
-}
-.comic_genre-title span{
-    padding: 5px 12px;
-    border-radius: 5px;
-    background: rgba(39, 39, 39, 0.4);
 }
 .comic_genre-box{
     grid-template-columns: repeat(6, 1fr);
@@ -941,8 +948,10 @@ form input{
 
 #box-nav{
     position: fixed;
-    top: 0; left: -600px; bottom: 0;
-    max-width: 600px;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    margin: 116px auto;
+    max-width: 800px;
     background: rgb(71, 71, 71);
     z-index: 10;
     padding: 20px;
@@ -979,6 +988,7 @@ form input{
 
 .box-nav_item{
     display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
     margin: 20px 0;
     gap: 8px 12px;
     max-height: 440px;
