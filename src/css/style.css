@@ -466,9 +466,8 @@ header .list-nav{
     font-size: 20px;
     font-weight: 600;
     text-transform: capitalize;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px 8px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #656b83;
 }
 .comic_genre-box{
     grid-template-columns: repeat(6, 1fr);
@@ -945,18 +944,19 @@ form input{
 .box-web_input .extra-web span:nth-child(3) {
     background: #504e4e;
 }
-
 #box-nav{
     position: fixed;
     top: 0; left: 50%;
     transform: translateX(-50%);
-    margin: 116px auto;
-    max-width: 800px;
+    margin: 64px auto;
+    width: 760px; max-width: 98%;
     background: rgb(71, 71, 71);
     z-index: 10;
     padding: 20px;
     color: rgb(241, 239, 239);
     transition: 0.6s;
+    border: 1px solid gray;
+    border-radius: 5px;
 }
 .box-nav_head{
     display: flex;
@@ -977,41 +977,43 @@ form input{
     border: 1px solid #5d5a5a;
     width: 260px;
 }
-#box-nav .box-nav_close{
-    position: absolute;
-    right: 12px; bottom: 12px;
-    padding: 8px 36px;
-    background: #2b3670;
-    border-radius: 5px;
-    border: 1px solid #2c2b2b;
-}
-
 .box-nav_item{
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    margin: 20px 0;
-    gap: 8px 12px;
-    max-height: 440px;
-    width: 560px; max-width: 100%;
+    grid-template-columns: repeat(4, 1fr);
+    padding: 20px 18px;
+    gap: 12px 8px;
+    max-height: 360px;
     overflow-y: scroll;
+    background: rgba(59, 59, 59, 0.5);
+    margin: 20px 0px;
 }
 .box-nav_item a {
-    display: block;
     background: #56535399;
     color: rgb(226, 226, 226);
-    border: 1px solid #938c8c;
+    border: 1px solid #676565;
     border-radius: 5px;
     padding: 6px 12px;
     text-transform: capitalize;
+    position: relative;
 }
-.box-nav_item a.choose{
-    background: #7b7b7f;
-    border: 1px solid #444242;
-    transition: 0.3s;
+.box-nav_item a:hover{
+    background: rgba(73, 72, 72, 0.4);
 }
-
-
-
+.box-nav_item p{
+    position: absolute;
+    top: -10px;
+    right: -6px;
+    border: 1px solid rgb(68 67 67);
+    padding: 0px 7px;
+    border-radius: 50%;
+    background: #1a1979;
+}
+.box-nav_close{
+    background: var(--web);
+    padding: 8px 28px;
+    border-radius: 3px;
+    float: right;
+}
 
 /* ------------------------------- */
 .web-fixed_nav i{
@@ -1038,9 +1040,15 @@ form input{
     color: red;
     font-size: 34px;
 }
+.web-fixed_icon .fa-list{
+    right: 100px;
+    bottom: 66px;
+    font-size: 28px;
+    color: tomato;
+}
 .web-fixed_icon .fa-globe{
-    right: 92px;
-    bottom: 82px;
+    right: 66px;
+    bottom: 102px;
     font-size: 28px;
     color: green;
 }

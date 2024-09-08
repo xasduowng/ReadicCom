@@ -107,10 +107,23 @@
     .box-comic{
         grid-template-columns: repeat(2, 1fr);
     }
+    .comic_genre-box{
+        max-height: 271px;
+        overflow-y: scroll;
+        padding: 8px;
+        margin-top: 18px;
+    }
     .box-comic_nav .col{flex-wrap: wrap}
     /*  --------------------------------------------------- */
+    .genre-box_item{
+        margin: 4px;
+    }
     .genre-box_item img{height: 200px;}
-    .genre-box_chap{top: 174px;}
+    .genre-box_chap{
+        top: 174px;
+        font-style: italic;
+        font-size: 13px;
+    }
     /*  --------------------------------------------------- */
     #box-web .col{
         display: block;
@@ -148,7 +161,8 @@
     .be_col-handle span{border: 1px solid #575656;}
     /* --------------------------------------------------------- */
     #box-nav{
-        width: 86%;
+        width: 94%;
+        margin: 20px auto;
     }
     .box-nav_input{
         width: 100%;

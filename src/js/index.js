@@ -298,7 +298,8 @@ function handleBoxComic(arrComic, idFilter) {
             // ----------------------------------
             z('.box-comic_nav span.choose').classList.remove('choose');
             comicNavs[index].classList.add('choose');
-            handleArrComic(index);;
+            handleArrComic(index); handleBoxNav(index);
+
         }
     }); 
    
@@ -449,9 +450,7 @@ function handleBoxComic(arrComic, idFilter) {
 //  Ham xu ly tra ve danh sach truyen--------------------------------//
 function handleComicHistory() {
     const arrHistory = dataWeb.arrayHistory;
-    const imgComic = zz('.ci_infor-img');
-    const nameComic = zz('.ci_name-comic');
-    const chapComic = zz('.cin-chap_name');
+    const comicItems = zz('.comic-item')
     function handleEventClick(items) {
         items.forEach((ele, index) => {
             ele.onclick = () => {
@@ -463,8 +462,7 @@ function handleComicHistory() {
                 handleReduceArr(arrHistory);
             }
         });
-    } 
-    handleEventClick(imgComic); handleEventClick(nameComic); handleEventClick(chapComic); 
+    } handleEventClick(comicItems)
     function handleReduceArr(arrHistory) {
         let length = arrHistory.length;
         if (length >=7) {
@@ -492,7 +490,7 @@ function handleComicHistory() {
                     </a>
                     <div>
                         <a href=${nameHref} class="genre-box_name name" target="_blank">${nameComic}</a>
-                        <a href=${chapterHref} class="genre-box_chap" target="_blank">Chương ${nameChap}</a>
+                        <a href=${chapterHref} class="genre-box_chap" target="_blank">Đọc từ chương ${nameChap}</a>
                     </div>
                 </div>
             `)
@@ -726,6 +724,148 @@ function handleBoxExtra() {
         return x;
     };   
 } handleBoxExtra();
+
+// Ham dung de them danh sach the loai, so chuong-------------------//
+function handleBoxNav(index) {
+    const titleNav = z('.box-nav_title span');
+    const boxNavItem = z('.box-nav_item');
+    const inputSearch = z('.box-nav_input');
+    const getArrGenre = dataWeb.arrayGenre;
+    const getArrComic = dataWeb.arrayComic;
+    // Cac ham de tra ve gia tri truyen
+    if (index == 0)         { handleNavChap();
+    } else if(index == 1)   { handleNavAlpha();
+    } else if(index == 2 )  { handleNavGenre();
+    } else                  { handleNavWeb()};
+    function handleNavGenre() {
+        const length = getArrGenre.length;
+        inputSearch.style = "display:block";
+        boxNavItem.innerHTML = getArrGenre.map(renderGenre).join("");   
+        titleNav.innerText = "Thể loại"   
+        function searchInput() {
+            inputSearch.oninput = () => {
+                const getValue = inputSearch.value;
+                const newArray = getArrGenre.filter((item) => {
+                    return item.nameGenre.toLowerCase().includes(getValue);
+                });
+                if (newArray.length == 0) {
+                    boxNavItem.style= "display:block";
+                    boxNavItem.innerHTML =  "Không thể tìm thấy thể loại bạn nhập!";
+                } else {
+                    boxNavItem.style= "display:grid";
+                    boxNavItem.innerHTML = newArray.map(renderGenre).join("");
+                    insertInfor(newArray);
+                }
+            }
+        } searchInput();
+        function insertInfor (arrayGenre) {
+            const getNum = zz('.nav_item-num');
+            const getLink = zz('.box-nav_item a');
+            for(let i = 0; i < length; i++) {
+                const getGenre = arrayGenre[i].nameGenre;
+                getLink[i].href = "#" + getGenre;
+                const array = getArrComic.filter((item) => {
+                    return item.listGenre.toLowerCase().includes(getGenre)
+                })
+                if (array.length > 1) { getNum[i].innerText = array.length};
+            };
+        } insertInfor(getArrGenre);
+        function renderGenre(item) {
+            const {nameGenre} = item;
+            return (`
+                <div>
+                    <a href="">${nameGenre}
+                        <p class="nav_item-num"></p>
+                    </a>
+                </div>
+            `)
+        }
+
+    };
+    function handleNavChap() {
+        titleNav.innerText = "Số chương";
+        inputSearch.style = "display:none";
+        const arrTitle = [
+            {nameItem: "Trên 500", value: [500, 5000]},
+            {nameItem: "300 - 500",value: [300, 499]},
+            {nameItem: "201 - 300",value: [200, 299]},
+            {nameItem: "101 - 200",value: [100, 199]},
+            {nameItem: "50 - 100",value: [50, 99]},
+            {nameItem: "Dưới 50",value: [0, 49]}
+        ];
+        boxNavItem.innerHTML = arrTitle.map(renderItem).join("");  
+        function insertInfor () {
+            const length = arrTitle.length;
+            const getNum = zz('.nav_item-num');
+            const getLink = zz('.box-nav_item a');
+            for (let i = 0; i < length; i++ ) {
+                const newArr = getArrComic.filter(item => {
+                    return item.nameChap > arrTitle[i].value[0] && item.nameChap < arrTitle[i].value[1]
+                })
+                getNum[i].innerText = newArr.length;
+                const getNameComic = newArr[0].nameComic;
+                getLink[i].href = "#" + getNameComic;
+            }
+            
+        } insertInfor(); 
+    };
+    function handleNavAlpha() {
+        titleNav.innerText = "Xếp theo Alpha";
+        const length = getArrComic.length;
+        const array = [];
+        for (let i = 0; i < length; i++) {
+            const nameComic = getArrComic[i].nameComic;
+            const arrName = nameComic.split("")[0];
+            array.push(arrName);
+        };
+        const arrayAlpha = (Array.from(new Set(array))).sort();
+        const newArray = [];
+        for (let j = 0; j < arrayAlpha.length; j++) {
+            newArray.push ({nameItem: arrayAlpha[j]})
+
+        };
+        boxNavItem.innerHTML = newArray.map(renderItem).join("");  
+        function insertInfor () {
+            const getNum = zz('.nav_item-num');
+            const getLink = zz('.box-nav_item a');   
+        } insertInfor(); 
+    };
+    function handleNavWeb() {
+        inputSearch.style = "display: none";
+        titleNav.innerText = "Website";
+        const webLength = arrWebsite.length;
+        const arrWeb = [];
+        for (let i = 0; i < webLength; i++) {
+            const getNameWeb = arrWebsite[i].nameWeb.toLowerCase();
+            const newArrComic = getArrComic.filter((item) => {
+                return item.nameHref.toLowerCase().includes(xoa_dau(getNameWeb));
+            });
+            if (newArrComic.length >= 1) {
+                arrWeb.push({
+                    nameItem: arrWebsite[i].nameWeb,
+                    lengthItem: newArrComic.length
+                })
+            }
+        };
+        boxNavItem.innerHTML = arrWeb.map(renderItem).join("");  
+        function insertInfor () {
+            const getNum = zz('.nav_item-num');
+            const getLink = zz('.box-nav_item a');
+            for (let i = 0; i < arrWeb.length; i++) {
+                getNum[i].innerText = arrWeb[i].lengthItem;
+                getLink[i].href = "#" + arrWeb[i].nameItem.toLowerCase();
+            }  
+        } insertInfor();
+    }; 
+        function renderItem(item) {
+            const {nameItem} = item;
+            return (`
+                <div>
+                    <a href="">${nameItem}<p class="nav_item-num"></p></a>
+                </div>
+            `)
+        }
+} handleBoxNav(idFilter);
 // Bat tat den------------------------------------------------------//
 function ligthToggle() {
     const statusBtn = zz('.ci_infor-status');
@@ -765,6 +905,7 @@ function handleDisplayElement() {
         navIcons[0].onclick = () => {showIcon()};
         navIcons[1].onclick = () => {hideIcon()};
         navIcons[2].onclick = () => {hideIcon()};
+        navIcons[3].onclick = () => {hideIcon()};
     } toggleNavIcon();
         function showIcon() {
             navIcons[0].classList.add('close');
@@ -805,6 +946,7 @@ function handleDisplayElement() {
     overLay.onclick = () => {
         hideIcon();
         overLay.classList.add('close');
+        z("#box-nav").classList.add('close');
         z('.box-extra').classList.add('close');
         getIdRespon == 1 ? (z('.list-nav').style="display: none") : console.log("Unknown");
     }
@@ -813,5 +955,20 @@ function handleDisplayElement() {
     boxExtraClose.onclick = () => {
         z('.box-extra').classList.add('close');
         overLay.classList.add('close');
+    };
+    // Nut dong trong nav
+    const closeBtn = z('.box-nav_close');
+    z('.fa-list').onclick = () => {
+        z("#box-nav").classList.remove('close');
+        z("#overlay").classList.remove('close');
+    }
+    closeBtn.onclick = () => {
+        z("#box-nav").classList.add('close');
+        z("#overlay").classList.add('close');
+        hideIcon();
+    }
+    z('.genre-web').onclick = () => {
+        z("#box-nav").classList.remove('close');
+        z("#overlay").classList.remove('close');
     }
 } handleDisplayElement();
