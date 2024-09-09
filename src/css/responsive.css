@@ -108,10 +108,7 @@
         grid-template-columns: repeat(2, 1fr);
     }
     .comic_genre-box{
-        max-height: 271px;
-        overflow-y: scroll;
-        padding: 8px;
-        margin-top: 18px;
+        margin-top: 8px;
     }
     .box-comic_nav .col{flex-wrap: wrap}
     /*  --------------------------------------------------- */
@@ -123,6 +120,7 @@
         top: 174px;
         font-style: italic;
         font-size: 13px;
+        padding: 4px;
     }
     /*  --------------------------------------------------- */
     #box-web .col{
@@ -170,5 +168,10 @@
     .box-nav_item{
         grid-template-columns: 1fr 1fr;
         max-height: 364px;
+        margin: 6px auto;
+        padding: 8px 6px;
+    }
+    .box-comic_nav span{
+        padding: 6px 8px;
     }
 }

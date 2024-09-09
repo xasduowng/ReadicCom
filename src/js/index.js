@@ -31,11 +31,14 @@ const overLay = z('#overlay');
 const boxExtra = z('.box-extra');
 const size = screen.width; const dataWeb = getApi ("dataWeb");
 const idFilter = (dataWeb.statusWeb).idFilter;
+const arrHistory = dataWeb.arrayHistory;
 const arrWebsite = dataWeb.arrayWebsite;
+var today = new Date().toLocaleString("en-US", {timeZone: "Asia/Jakarta"});
 handleBoxWebsite(arrWebsite);
 const arrComic = dataWeb.arrayComic;
     arrComic.length >= 1 ? (handleBoxComic(arrComic, idFilter), handleBoxGenre())
         : console.log("Chưa có dữ liệu!");
+
 // Ham xu ly o tim kiem---------------------------------------------//
 function handleBoxSearch() {
     const getIdSearch = getApi ("dataWeb").statusWeb.idSearch;
@@ -275,7 +278,6 @@ function handleBoxGenre() {
 // Ham xu ly tra ve danh sach truyen--------------------------------//
 function handleBoxComic(arrComic, idFilter) {
     const boxComic = z('.box-comic');
-    var today = new Date().toLocaleString("en-US", {timeZone: "Asia/Jakarta"});
     const comicNavs = zz('.box-comic_nav span');
     comicNavs[idFilter].classList.add('choose');
     // --------------------------------//
@@ -301,8 +303,7 @@ function handleBoxComic(arrComic, idFilter) {
             handleArrComic(index); handleBoxNav(index);
 
         }
-    }); 
-   
+    });   
     function handleArrComic(index) {
         if (index == 0) {
             // Sắp xếp theo số chương
@@ -312,7 +313,7 @@ function handleBoxComic(arrComic, idFilter) {
             Object.assign((boxComic).style, {
                 display: "grid"
             })
-            handleRenderComic(arrComic); handleBoxExtra(); handleComicHistory();
+            handleRenderComic(arrComic);
         } else if (index == 1) {
             // Sắp xếp theo alpha
             arrComic.sort((a,b) => {
@@ -331,7 +332,7 @@ function handleBoxComic(arrComic, idFilter) {
             Object.assign((boxComic).style, {
                 display: "grid"
             })
-            handleRenderComic(arrComic); handleBoxExtra(); handleComicHistory();
+            handleRenderComic(arrComic);
         } else if (index == 2) {
            // Sap xep truyện theo the loai
             boxComic.innerHTML = "";
@@ -360,8 +361,6 @@ function handleBoxComic(arrComic, idFilter) {
                 boxComic.appendChild(span);
                 boxComic.appendChild(div);
             }
-                // Them danh sach ten theo the loai
-            handleBoxExtra(); handleComicHistory();
         } else if (index == 3) {
             // Trả về danh sách các website
             boxComic.innerHTML = "";
@@ -389,8 +388,9 @@ function handleBoxComic(arrComic, idFilter) {
                     boxComic.appendChild(div);
                 }
             };
-            handleBoxExtra(); handleComicHistory();
         };
+         // Them danh sach ten theo the loai
+        handleBoxExtra(); handleComicHistory();
         function handleRenderComic(arrComic) {
             boxComic.innerHTML = arrComic.map(renderComicGenre).join("");
             insertValueComic(arrComic);
@@ -447,10 +447,13 @@ function handleBoxComic(arrComic, idFilter) {
         };
     } handleArrComic(idFilter);
 };
-//  Ham xu ly tra ve danh sach truyen--------------------------------//
+// Ham xu ly tra ve danh sach truyen--------------------------------//
 function handleComicHistory() {
-    const arrHistory = dataWeb.arrayHistory;
-    const comicItems = zz('.comic-item')
+    const comicItem = zz('.comic-item');
+    const listImg = zz('.ci_infor-img');
+    const listName = zz('.ci_name-comic');
+    const listChap = zz('.ci_name-chap');
+    const boxList = z('.comic_genre-list');
     function handleEventClick(items) {
         items.forEach((ele, index) => {
             ele.onclick = () => {
@@ -458,26 +461,33 @@ function handleComicHistory() {
                 const currentComic = arrComic.filter((item) => {
                     return item.nameComic.toLowerCase().includes(getNameComic);
                 });
-                arrHistory.push(currentComic[0]);
-                handleReduceArr(arrHistory);
+                let removeHistory = arrHistory.findIndex(item => item.nameComic == currentComic[0].nameComic);
+                if (removeHistory != -1) {
+                    arrHistory.splice(removeHistory, 1);
+                    arrHistory.push(currentComic[0]);
+                    handleReduceArr(arrHistory);
+                } else {
+                    arrHistory.push(currentComic[0]);
+                    handleReduceArr(arrHistory);
+                };
             }
-        });
-    } handleEventClick(comicItems)
+        }); 
+    } handleEventClick(listImg); handleEventClick(listName); handleEventClick(listChap); 
     function handleReduceArr(arrHistory) {
+        let array = [];
         let length = arrHistory.length;
-        if (length >=7) {
-            let array = [];
-            for(let i = length-1; i > length -7; i-- ) {
+        if (length > 6) {
+            for (let i = length-1 ; i > length -7; i--) {
                 array.push(arrHistory[i]);
             }
-            renderComicGenre(array);
+            renderComicGenre(array); // renderListHistory(array)
             dataWeb.arrayHistory = array;
             postApi("dataWeb", dataWeb);
         } else {
-            renderComicGenre(arrHistory);
+            renderComicGenre(arrHistory); // renderListHistory(arrHistory);
             dataWeb.arrayHistory = arrHistory;
             postApi("dataWeb", dataWeb);
-        } 
+        }
     } handleReduceArr(arrHistory);
     function renderComicGenre(newArr) {
         const genreBox = z('.comic_genre-box');
@@ -502,6 +512,20 @@ function handleComicHistory() {
             })
         } insertIdComic();
     };
+    function renderListHistory(arr) {
+        boxList.innerHTML = arr.map(item => {
+            const {nameComic, chapterHref, nameChap, nameHref} = item;
+            return (`
+                <div class="genre-list_item">
+                    <a href=${nameHref}>${nameComic}</a>
+                    <a href=${chapterHref}>Đọc tiếp chương <span>${nameChap}</span></a>-
+                    <p>Cập nhật lúc : <span></span></p>
+                </div>
+            `)
+        }).join("");
+        const listUpdate = zz('.genre-list_item p > span');
+        renderDate(listUpdate, arr, today);
+    }
 } ;
 // Ham xu ly cac website--------------------------------------------//
 function handleBoxWebsite(arrWebsite) {
@@ -661,6 +685,14 @@ function handleBoxExtra() {
             arrComic.push(getValueInput());
             dataWeb.arrayComic = arrComic;
                 postApi("dataWeb", dataWeb);
+            // Xu ly gia tri truyen trong phan lich su
+            let removeHistory = arrHistory.findIndex(item => item.nameComic == nowComic.nameComic);
+            if (removeHistory != -1) {
+                arrHistory.splice(removeHistory, 1);
+                arrHistory.push(getValueInput());
+                dataWeb.arrayHistory = arrComic;
+                postApi("dataWeb", dataWeb);
+            };
             location.reload();
         }
         // Xoa phan tu trong mang
@@ -724,7 +756,6 @@ function handleBoxExtra() {
         return x;
     };   
 } handleBoxExtra();
-
 // Ham dung de them danh sach the loai, so chuong-------------------//
 function handleBoxNav(index) {
     const titleNav = z('.box-nav_title span');
@@ -947,6 +978,7 @@ function handleDisplayElement() {
         hideIcon();
         overLay.classList.add('close');
         z("#box-nav").classList.add('close');
+        z('.list-nav').style = "display: none";
         z('.box-extra').classList.add('close');
         getIdRespon == 1 ? (z('.list-nav').style="display: none") : console.log("Unknown");
     }
